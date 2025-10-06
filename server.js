@@ -1,10 +1,10 @@
-// server.js
 const express = require('express');
 const session = require('express-session');
 const dotenv = require('dotenv');
 const path = require('path');
 const connectDB = require('./config/database');
 const authRoutes = require('./routes/authRoutes');
+const pacienteRoutes = require('./routes/pacienteRoutes');
 
 // Cargar variables de entorno
 dotenv.config();
@@ -15,15 +15,13 @@ const app = express();
 // Conectar a la base de datos
 connectDB();
 
-// Configurar EJS como motor de plantillas
+// Configurar EJS
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 
-// Middleware para parsear el body
+// Middleware
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
-
-// Middleware para archivos estáticos
 app.use(express.static(path.join(__dirname, 'public')));
 
 // Configurar sesiones
@@ -36,15 +34,16 @@ app.use(session({
     }
 }));
 
-// Usar rutas de autenticación
+// Rutas
 app.use('/', authRoutes);
+app.use('/pacientes', pacienteRoutes);
 
-// Ruta raíz redirige al login
+// Ruta raíz
 app.get('/', (req, res) => {
     res.redirect('/login');
 });
 
-// Configurar puerto
+// Puerto
 const PORT = process.env.PORT || 3000;
 
 // Iniciar servidor
