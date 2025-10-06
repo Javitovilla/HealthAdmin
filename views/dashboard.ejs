@@ -1,0 +1,36 @@
+<!-- views/dashboard.ejs -->
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - HealthAdmin</title>
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+    <div class="dashboard">
+        <header class="dashboard-header">
+            <h1>HealthAdmin</h1>
+            <nav>
+                <span class="usuario-info">
+                    <%= usuario.nombre %> 
+                    (<%= usuario.rol === 'administrativo' ? 'Administrativo' : 'Asistencial' %>)
+                </span>
+                <a href="/logout" class="btn-logout">Cerrar Sesión</a>
+            </nav>
+        </header>
+
+        <main class="dashboard-main">
+            <h2>Bienvenido al Sistema</h2>
+            <p>Has iniciado sesión correctamente.</p>
+            
+            <div class="dashboard-stats">
+                <div class="stat-card">
+                    <h3>Sistema Activo</h3>
+                    <p>Fase 2 completada</p>
+                </div>
+            </div>
+        </main>
+    </div>
+</body>
+</html>
