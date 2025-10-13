@@ -1,3 +1,4 @@
+// server.js
 const express = require('express');
 const session = require('express-session');
 const dotenv = require('dotenv');
@@ -5,6 +6,7 @@ const path = require('path');
 const connectDB = require('./config/database');
 const authRoutes = require('./routes/authRoutes');
 const pacienteRoutes = require('./routes/pacienteRoutes');
+const citaRoutes = require('./routes/citaRoutes');
 
 // Cargar variables de entorno
 dotenv.config();
@@ -37,6 +39,7 @@ app.use(session({
 // Rutas
 app.use('/', authRoutes);
 app.use('/pacientes', pacienteRoutes);
+app.use('/citas', citaRoutes);
 
 // Ruta raíz
 app.get('/', (req, res) => {

@@ -1,3 +1,4 @@
+<!-- views/dashboard.ejs -->
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -13,6 +14,7 @@
             <nav class="nav-menu">
                 <a href="/dashboard" class="active">Dashboard</a>
                 <a href="/pacientes">Pacientes</a>
+                <a href="/citas">Citas</a>
                 <span class="usuario-info">
                     <%= usuario.nombre %> 
                     (<%= usuario.rol === 'administrativo' ? 'Administrativo' : 'Asistencial' %>)
@@ -28,8 +30,11 @@
             <div class="dashboard-stats">
                 <div class="stat-card">
                     <h3>Módulos Disponibles</h3>
-                    <ul>
-                        <li><a href="/pacientes">Gestión de Pacientes</a></li>
+                    <ul style="list-style: none; padding: 0;">
+                        <li style="margin: 10px 0;"><a href="/pacientes">📋 Gestión de Pacientes</a></li>
+                        <li style="margin: 10px 0;"><a href="/citas/dia">📅 Citas del Día</a></li>
+                        <li style="margin: 10px 0;"><a href="/citas">🗓️ Todas las Citas</a></li>
+                        <li style="margin: 10px 0;"><a href="/citas/agendar">➕ Agendar Nueva Cita</a></li>
                     </ul>
                 </div>
             </div>

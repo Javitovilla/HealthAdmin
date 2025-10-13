@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Todas las Citas - HealthAdmin</title>
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+    <div class="dashboard">
+        <!-- Header -->
+        <header class="dashboard-header">
+            <h1>HealthAdmin</h1>
+            <nav class="nav-menu">
+                <a href="/dashboard">Dashboard</a>
+                <a href="/pacientes">Pacientes</a>
+                <a href="/citas" class="active">Citas</a>
+                <span class="usuario-info">
+                    <%= usuario.nombre %> (<%= usuario.rol === 'administrativo' ? 'Administrativo' : 'Asistencial' %>)
+                </span>
+                <a href="/logout" class="btn-logout">Cerrar Sesión</a>
+            </nav>
+        </header>
+
+        <!-- Main Content -->
+        <main class="dashboard-main">
+            <div class="page-header">
+                <h2>Todas las Citas</h2>
+                <div>
+                    <a href="/citas/dia" class="btn btn-info">Ver Citas del Día</a>
+                    <a href="/citas/agendar" class="btn btn-primary">Agendar Cita</a>
+                </div>
+            </div>
+
+            <!-- Filtros -->
+            <div class="filtros-container">
+                <form action="/citas" method="GET" class="filtros-form">
+                    <div class="filtro-group">
+                        <label for="fecha">Fecha:</label>
+                        <input 
+                            type="date" 
+                            id="fecha" 
+                            name="fecha"
+                            value="<%= filtros.fecha || '' %>"
+                        >
+                    </div>
+                    <div class="filtro-group">
+                        <label for="estado">Estado:</label>
+                        <select id="estado" name="estado">
+                            <option value="">Todos</option>
+                            <option value="pendiente" <%= filtros.estado === 'pendiente' ? 'selected' : '' %>>Pendiente</option>
+                            <option value="atendida" <%= filtros.estado === 'atendida' ? 'selected' : '' %>>Atendida</option>
+                            <option value="cancelada" <%= filtros.estado === 'cancelada' ? 'selected' : '' %>>Cancelada</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-search">Filtrar</button>
+                    <a href="/citas" class="btn btn-secondary">Limpiar</a>
+                </form>
+            </div>
+
+            <!-- Mensaje -->
+            <% if (mensaje) { %>
+                <div class="alert alert-success">
+                    <%= mensaje %>
+                </div>
+            <% } %>
+
+            <!-- Tabla de citas -->
+            <div class="table-container">
+                <% if (citas.length === 0) { %>
+                    <p class="no-data">No hay citas registradas</p>
+                <% } else { %>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Fecha</th>
+                                <th>Hora</th>
+                                <th>Paciente</th>
+                                <th>Médico</th>
+                                <th>Motivo</th>
+                                <th>Estado</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% citas.forEach(cita => { %>
+                                <tr>
+                                    <td><%= cita.fecha.toLocaleDateString('es-CO') %></td>
+                                    <td><%= cita.hora %></td>
+                                    <td><%= cita.paciente.nombreCompleto %></td>
+                                    <td><%= cita.medicoAsignado.nombre %></td>
+                                    <td><%= cita.motivoConsulta.substring(0, 30) %>...</td>
+                                    <td>
+                                        <span class="badge badge-<%= cita.estado %>">
+                                            <%= cita.estado === 'pendiente' ? 'Pendiente' : cita.estado === 'atendida' ? 'Atendida' : 'Cancelada' %>
+                                        </span>
+                                    </td>
+                                    <td class="actions">
+                                        <a href="/citas/<%= cita._id %>" class="btn btn-sm btn-info">Ver</a>
+                                    </td>
+                                </tr>
+                            <% }); %>
+                        </tbody>
+                    </table>
+
+                    <!-- Paginación -->
+                    <% if (totalPaginas > 1) { %>
+                        <div class="pagination">
+                            <% if (paginaActual > 1) { %>
+                                <a href="/citas?pagina=<%= paginaActual - 1 %><%= filtros.fecha ? '&fecha=' + filtros.fecha : '' %><%= filtros.estado ? '&estado=' + filtros.estado : '' %>" 
+                                   class="btn btn-sm">Anterior</a>
+                            <% } %>
+                            
+                            <span class="page-info">Página <%= paginaActual %> de <%= totalPaginas %></span>
+                            
+                            <% if (paginaActual < totalPaginas) { %>
+                                <a href="/citas?pagina=<%= paginaActual + 1 %><%= filtros.fecha ? '&fecha=' + filtros.fecha : '' %><%= filtros.estado ? '&estado=' + filtros.estado : '' %>" 
+                                   class="btn btn-sm">Siguiente</a>
+                            <% } %>
+                        </div>
+                    <% } %>
+                <% } %>
+            </div>
+        </main>
+    </div>
+</body>
+</html>

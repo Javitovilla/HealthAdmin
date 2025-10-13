@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Citas del Día - HealthAdmin</title>
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+    <div class="dashboard">
+        <!-- Header -->
+        <header class="dashboard-header">
+            <h1>HealthAdmin</h1>
+            <nav class="nav-menu">
+                <a href="/dashboard">Dashboard</a>
+                <a href="/pacientes">Pacientes</a>
+                <a href="/citas" class="active">Citas</a>
+                <span class="usuario-info">
+                    <%= usuario.nombre %> (<%= usuario.rol === 'administrativo' ? 'Administrativo' : 'Asistencial' %>)
+                </span>
+                <a href="/logout" class="btn-logout">Cerrar Sesión</a>
+            </nav>
+        </header>
+
+        <!-- Main Content -->
+        <main class="dashboard-main">
+            <div class="page-header">
+                <h2>Citas del Día - <%= fecha.toLocaleDateString('es-CO', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }) %></h2>
+                <div>
+                    <a href="/citas/agendar" class="btn btn-primary">Agendar Cita</a>
+                    <a href="/citas" class="btn btn-secondary">Ver Todas</a>
+                </div>
+            </div>
+
+            <!-- Mensaje -->
+            <% if (mensaje) { %>
+                <div class="alert alert-success">
+                    <%= mensaje %>
+                </div>
+            <% } %>
+
+            <!-- Lista de citas -->
+            <div class="citas-container">
+                <% if (citas.length === 0) { %>
+                    <div class="no-data">
+                        <p>No hay citas programadas para hoy</p>
+                    </div>
+                <% } else { %>
+                    <div class="citas-grid">
+                        <% citas.forEach(cita => { %>
+                            <div class="cita-card <%= cita.estado %>">
+                                <div class="cita-header">
+                                    <span class="cita-hora"><%= cita.hora %></span>
+                                    <span class="cita-estado estado-<%= cita.estado %>">
+                                        <%= cita.estado === 'pendiente' ? 'Pendiente' : cita.estado === 'atendida' ? 'Atendida' : 'Cancelada' %>
+                                    </span>
+                                </div>
+                                <div class="cita-body">
+                                    <h3><%= cita.paciente.nombreCompleto %></h3>
+                                    <p><strong>Documento:</strong> <%= cita.paciente.tipoDocumento %>-<%= cita.paciente.numeroDocumento %></p>
+                                    <p><strong>Médico:</strong> <%= cita.medicoAsignado.nombre %></p>
+                                    <p><strong>Motivo:</strong> <%= cita.motivoConsulta %></p>
+                                </div>
+                                <div class="cita-actions">
+                                    <a href="/citas/<%= cita._id %>" class="btn btn-sm btn-info">Ver Detalle</a>
+                                    <% if (cita.estado === 'pendiente') { %>
+                                        <form action="/citas/<%= cita._id %>/estado" method="POST" style="display: inline;">
+                                            <input type="hidden" name="estado" value="atendida">
+                                            <button type="submit" class="btn btn-sm btn-success">Marcar Atendida</button>
+                                        </form>
+                                        <form action="/citas/<%= cita._id %>/estado" method="POST" style="display: inline;">
+                                            <input type="hidden" name="estado" value="cancelada">
+                                            <button type="submit" class="btn btn-sm btn-danger">Cancelar</button>
+                                        </form>
+                                    <% } %>
+                                </div>
+                            </div>
+                        <% }); %>
+                    </div>
+                <% } %>
+            </div>
+        </main>
+    </div>
+</body>
+</html>
