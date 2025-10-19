@@ -252,11 +252,11 @@ const verDetalle = async (req, res) => {
 };
 
 module.exports = {
-    mostrarFormularioAgendar,
-    buscarPacienteParaCita,
-    agendarCita,
-    listarCitasDelDia,
-    listarTodasCitas,
-    cambiarEstado,
-    verDetalle
+    mostrarFormulario: mostrarFormularioAgendar,
+    crearCita: agendarCita,
+    listarCitas: listarTodasCitas,
+    citasDelDia: listarCitasDelDia,
+    buscarPacientes: buscarPacienteParaCita,
+    verDetalle,
+    cambiarEstado
 };

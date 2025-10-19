@@ -37,13 +37,24 @@ app.use(session({
 }));
 
 // Rutas
-app.use('/', authRoutes);
+app.use('/auth', authRoutes);
 app.use('/pacientes', pacienteRoutes);
 app.use('/citas', citaRoutes);
 
 // Ruta raíz
 app.get('/', (req, res) => {
-    res.redirect('/login');
+    if (req.session.usuario) {
+        return res.redirect('/dashboard');
+    }
+    res.redirect('/auth/login');
+});
+
+// Ruta del dashboard (requiere autenticación)
+app.get('/dashboard', (req, res) => {
+    if (!req.session.usuario) {
+        return res.redirect('/auth/login');
+    }
+    res.render('dashboard', { usuario: req.session.usuario });
 });
 
 // Puerto

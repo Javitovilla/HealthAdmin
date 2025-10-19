@@ -1,101 +1,92 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pacientes - HealthAdmin</title>
-    <link rel="stylesheet" href="/css/styles.css">
+    <%- include('../partials/head') %>
 </head>
 <body>
-    <div class="dashboard">
-        <!-- Header -->
-        <header class="dashboard-header">
-            <h1>HealthAdmin</h1>
-            <nav class="nav-menu">
-                <a href="/dashboard">Dashboard</a>
-                <a href="/pacientes" class="active">Pacientes</a>
-                <span class="usuario-info">
-                    <%= usuario.nombre %> (<%= usuario.rol === 'administrativo' ? 'Administrativo' : 'Asistencial' %>)
-                </span>
-                <a href="/logout" class="btn-logout">Cerrar Sesión</a>
-            </nav>
-        </header>
+    <%- include('../partials/navbar') %>
 
-        <!-- Main Content -->
-        <main class="dashboard-main">
-            <div class="page-header">
-                <h2>Gestión de Pacientes</h2>
-                <a href="/pacientes/nuevo" class="btn btn-primary">Nuevo Paciente</a>
+    <div class="container">
+        <div class="page-header">
+            <h2><i class="fas fa-users"></i> Gestión de Pacientes</h2>
+            <a href="/pacientes/nuevo" class="btn btn-primary">
+                <i class="fas fa-user-plus"></i> Nuevo Paciente
+            </a>
+        </div>
+
+        <% if (mensaje) { %>
+            <div class="alert alert-success">
+                <i class="fas fa-check-circle"></i> <%= mensaje %>
             </div>
+        <% } %>
 
-            <!-- Barra de búsqueda -->
-            <div class="search-bar">
-                <form action="/pacientes/buscar" method="GET">
-                    <input 
-                        type="text" 
-                        name="busqueda" 
-                        placeholder="Buscar por nombre o documento..."
-                        class="search-input"
-                    >
-                    <button type="submit" class="btn btn-search">Buscar</button>
-                </form>
-            </div>
+        <form action="/pacientes/buscar" method="GET" class="search-bar">
+            <input 
+                type="text" 
+                name="busqueda" 
+                placeholder="Buscar por nombre o documento..."
+            >
+            <button type="submit">
+                <i class="fas fa-search"></i> Buscar
+            </button>
+        </form>
 
-            <!-- Mensaje de confirmación -->
-            <% if (mensaje) { %>
-                <div class="alert alert-success">
-                    <%= mensaje %>
+        <div class="table-container">
+            <% if (pacientes.length === 0) { %>
+                <div class="empty-state">
+                    <i class="fas fa-user-slash"></i>
+                    <p>No hay pacientes registrados</p>
                 </div>
-            <% } %>
-
-            <!-- Tabla de pacientes -->
-            <div class="table-container">
-                <% if (pacientes.length === 0) { %>
-                    <p class="no-data">No hay pacientes registrados</p>
-                <% } else { %>
-                    <table class="table">
-                        <thead>
+            <% } else { %>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Nombre Completo</th>
+                            <th>Documento</th>
+                            <th>Teléfono</th>
+                            <th>Edad</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% pacientes.forEach(paciente => { %>
                             <tr>
-                                <th>Nombre Completo</th>
-                                <th>Documento</th>
-                                <th>Teléfono</th>
-                                <th>Edad</th>
-                                <th>Acciones</th>
+                                <td><%= paciente.nombreCompleto %></td>
+                                <td><%= paciente.tipoDocumento %>-<%= paciente.numeroDocumento %></td>
+                                <td><%= paciente.telefono %></td>
+                                <td><%= paciente.edad %> años</td>
+                                <td>
+                                    <a href="/pacientes/<%= paciente._id %>" class="btn btn-sm btn-primary">
+                                        <i class="fas fa-eye"></i> Ver
+                                    </a>
+                                    <a href="/pacientes/<%= paciente._id %>/editar" class="btn btn-sm btn-warning">
+                                        <i class="fas fa-edit"></i> Editar
+                                    </a>
+                                </td>
                             </tr>
-                        </thead>
-                        <tbody>
-                            <% pacientes.forEach(paciente => { %>
-                                <tr>
-                                    <td><%= paciente.nombreCompleto %></td>
-                                    <td><%= paciente.tipoDocumento %>-<%= paciente.numeroDocumento %></td>
-                                    <td><%= paciente.telefono %></td>
-                                    <td><%= paciente.edad %> años</td>
-                                    <td class="actions">
-                                        <a href="/pacientes/<%= paciente._id %>" class="btn btn-sm btn-info">Ver</a>
-                                        <a href="/pacientes/<%= paciente._id %>/editar" class="btn btn-sm btn-warning">Editar</a>
-                                    </td>
-                                </tr>
-                            <% }); %>
-                        </tbody>
-                    </table>
+                        <% }); %>
+                    </tbody>
+                </table>
 
-                    <!-- Paginación -->
-                    <% if (totalPaginas > 1) { %>
-                        <div class="pagination">
-                            <% if (paginaActual > 1) { %>
-                                <a href="/pacientes?pagina=<%= paginaActual - 1 %>" class="btn btn-sm">Anterior</a>
-                            <% } %>
-                            
-                            <span class="page-info">Página <%= paginaActual %> de <%= totalPaginas %></span>
-                            
-                            <% if (paginaActual < totalPaginas) { %>
-                                <a href="/pacientes?pagina=<%= paginaActual + 1 %>" class="btn btn-sm">Siguiente</a>
-                            <% } %>
-                        </div>
-                    <% } %>
+                <% if (totalPaginas > 1) { %>
+                    <div class="pagination">
+                        <% if (paginaActual > 1) { %>
+                            <a href="/pacientes?pagina=<%= paginaActual - 1 %>">
+                                <i class="fas fa-chevron-left"></i> Anterior
+                            </a>
+                        <% } %>
+                        
+                        <span class="active">Página <%= paginaActual %> de <%= totalPaginas %></span>
+                        
+                        <% if (paginaActual < totalPaginas) { %>
+                            <a href="/pacientes?pagina=<%= paginaActual + 1 %>">
+                                Siguiente <i class="fas fa-chevron-right"></i>
+                            </a>
+                        <% } %>
+                    </div>
                 <% } %>
-            </div>
-        </main>
+            <% } %>
+        </div>
     </div>
 </body>
 </html>

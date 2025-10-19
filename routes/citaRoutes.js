@@ -1,30 +1,30 @@
 const express = require('express');
 const router = express.Router();
 const citaController = require('../controllers/citaController');
-const { isAuthenticated } = require('../middleware/auth');
+const { requireLogin } = require('../middleware/auth');
 
 // Todas las rutas requieren autenticación
-router.use(isAuthenticated);
+router.use(requireLogin);
 
-// Listar citas del día
-router.get('/dia', citaController.listarCitasDelDia);
+// Formulario de nueva cita
+router.get('/nueva', citaController.mostrarFormulario);
 
-// Listar todas las citas
-router.get('/', citaController.listarTodasCitas);
+// Procesar nueva cita
+router.post('/nueva', citaController.crearCita);
 
-// Buscar paciente para cita (API)
-router.get('/buscar-paciente', citaController.buscarPacienteParaCita);
+// Lista de todas las citas
+router.get('/lista', citaController.listarCitas);
 
-// Mostrar formulario de agendar
-router.get('/agendar', citaController.mostrarFormularioAgendar);
+// Citas del día
+router.get('/dia', citaController.citasDelDia);
 
-// Agendar cita
-router.post('/agendar', citaController.agendarCita);
-
-// Ver detalle
+// Detalle de una cita
 router.get('/:id', citaController.verDetalle);
 
-// Cambiar estado
+// Cambiar estado de cita
 router.post('/:id/estado', citaController.cambiarEstado);
+
+// API para buscar pacientes
+router.get('/api/buscar-pacientes', citaController.buscarPacientes);
 
 module.exports = router;

@@ -1,209 +1,104 @@
-<!-- views/citas/formulario.ejs -->
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><%= titulo %> - HealthAdmin</title>
-    <link rel="stylesheet" href="/css/styles.css">
+    <%- include('../partials/head') %>
 </head>
 <body>
-    <div class="dashboard">
-        <!-- Header -->
-        <header class="dashboard-header">
-            <h1>HealthAdmin</h1>
-            <nav class="nav-menu">
-                <a href="/dashboard">Dashboard</a>
-                <a href="/pacientes">Pacientes</a>
-                <a href="/citas">Citas</a>
-                <span class="usuario-info">
-                    <%= usuario.nombre %> (<%= usuario.rol === 'administrativo' ? 'Administrativo' : 'Asistencial' %>)
-                </span>
-                <a href="/logout" class="btn-logout">Cerrar Sesión</a>
-            </nav>
-        </header>
+    <%- include('../partials/navbar') %>
 
-        <!-- Main Content -->
-        <main class="dashboard-main">
-            <div class="page-header">
-                <h2><%= titulo %></h2>
-                <a href="/citas" class="btn btn-secondary">Volver</a>
+    <div class="container">
+        <div class="page-header">
+            <h2><i class="fas fa-calendar-plus"></i> <%= titulo %></h2>
+            <a href="/citas/dia" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i> Volver
+            </a>
+        </div>
+
+        <% if (error) { %>
+            <div class="alert alert-error">
+                <i class="fas fa-exclamation-circle"></i> <%= error %>
             </div>
+        <% } %>
 
-            <!-- Mensaje de error -->
-            <% if (error) { %>
-                <div class="alert alert-error">
-                    <%= error %>
+        <div class="form-card">
+            <form action="/citas/nueva" method="POST" id="formCita">
+                <div class="form-group">
+                    <label for="buscarPaciente">
+                        <i class="fas fa-search"></i> Buscar Paciente *
+                    </label>
+                    <input 
+                        type="text" 
+                        id="buscarPaciente" 
+                        placeholder="Buscar por nombre o documento..."
+                        autocomplete="off"
+                    >
+                    <div id="resultadosBusqueda" style="position: relative; z-index: 10;"></div>
+                    <input type="hidden" name="pacienteId" id="pacienteId" required>
+                    <div id="pacienteSeleccionado"></div>
                 </div>
-            <% } %>
 
-            <!-- Formulario -->
-            <div class="form-container">
-                <form action="/citas/agendar" method="POST" id="formCita">
-                    <div class="form-grid">
-                        <!-- Buscar Paciente -->
-                        <div class="form-group full-width">
-                            <label for="buscarPaciente">Buscar Paciente *</label>
-                            <input 
-                                type="text" 
-                                id="buscarPaciente" 
-                                placeholder="Buscar por nombre o documento..."
-                                autocomplete="off"
-                            >
-                            <div id="resultadosBusqueda" class="search-results"></div>
-                            <input type="hidden" name="pacienteId" id="pacienteId" required>
-                            <div id="pacienteSeleccionado" class="paciente-selected"></div>
-                        </div>
+                <div class="form-group">
+                    <label for="medicoAsignado">
+                        <i class="fas fa-user-md"></i> Médico/Personal Asistencial *
+                    </label>
+                    <select id="medicoAsignado" name="medicoAsignado" required>
+                        <option value="">Seleccione un médico...</option>
+                        <% medicos.forEach(medico => { %>
+                            <option value="<%= medico._id %>"><%= medico.nombre %></option>
+                        <% }); %>
+                    </select>
+                </div>
 
-                        <!-- Médico Asignado -->
-                        <div class="form-group">
-                            <label for="medicoAsignado">Médico/Personal Asistencial *</label>
-                            <select id="medicoAsignado" name="medicoAsignado" required>
-                                <option value="">Seleccione un médico...</option>
-                                <% medicos.forEach(medico => { %>
-                                    <option value="<%= medico._id %>"><%= medico.nombre %></option>
-                                <% }); %>
-                            </select>
-                        </div>
+                <div class="form-group">
+                    <label for="fecha">
+                        <i class="fas fa-calendar"></i> Fecha *
+                    </label>
+                    <input 
+                        type="date" 
+                        id="fecha" 
+                        name="fecha" 
+                        required
+                        min="<%= new Date().toISOString().split('T')[0] %>"
+                    >
+                </div>
 
-                        <!-- Fecha -->
-                        <div class="form-group">
-                            <label for="fecha">Fecha *</label>
-                            <input 
-                                type="date" 
-                                id="fecha" 
-                                name="fecha" 
-                                required
-                                min="<%= new Date().toISOString().split('T')[0] %>"
-                            >
-                        </div>
+                <div class="form-group">
+                    <label for="hora">
+                        <i class="fas fa-clock"></i> Hora *
+                    </label>
+                    <select id="hora" name="hora" required>
+                        <option value="">Seleccione una hora...</option>
+                        <% horarios.forEach(horario => { %>
+                            <option value="<%= horario %>"><%= horario %></option>
+                        <% }); %>
+                    </select>
+                </div>
 
-                        <!-- Hora -->
-                        <div class="form-group">
-                            <label for="hora">Hora *</label>
-                            <select id="hora" name="hora" required>
-                                <option value="">Seleccione una hora...</option>
-                                <% horarios.forEach(horario => { %>
-                                    <option value="<%= horario %>"><%= horario %></option>
-                                <% }); %>
-                            </select>
-                        </div>
+                <div class="form-group">
+                    <label for="motivoConsulta">
+                        <i class="fas fa-notes-medical"></i> Motivo de Consulta *
+                    </label>
+                    <textarea 
+                        id="motivoConsulta" 
+                        name="motivoConsulta" 
+                        rows="4" 
+                        required
+                        placeholder="Describa el motivo de la consulta..."
+                    ></textarea>
+                </div>
 
-                        <!-- Motivo de Consulta -->
-                        <div class="form-group full-width">
-                            <label for="motivoConsulta">Motivo de Consulta *</label>
-                            <textarea 
-                                id="motivoConsulta" 
-                                name="motivoConsulta" 
-                                rows="4" 
-                                required
-                                placeholder="Describa el motivo de la consulta..."
-                            ></textarea>
-                        </div>
-                    </div>
-
-                    <div class="form-actions">
-                        <button type="submit" class="btn btn-primary">
-                            Agendar Cita
-                        </button>
-                        <a href="/citas" class="btn btn-secondary">Cancelar</a>
-                    </div>
-                </form>
-            </div>
-        </main>
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-success">
+                        <i class="fas fa-calendar-check"></i> Agendar Cita
+                    </button>
+                    <a href="/citas/dia" class="btn btn-secondary">
+                        <i class="fas fa-times"></i> Cancelar
+                    </a>
+                </div>
+            </form>
+        </div>
     </div>
 
-<script>
-        // Búsqueda de pacientes - Script inline
-        document.addEventListener('DOMContentLoaded', function() {
-            const inputBusqueda = document.getElementById('buscarPaciente');
-            const resultadosDiv = document.getElementById('resultadosBusqueda');
-            const pacienteIdInput = document.getElementById('pacienteId');
-            const pacienteSeleccionadoDiv = document.getElementById('pacienteSeleccionado');
-            
-            let timeoutBusqueda = null;
-
-            inputBusqueda.addEventListener('input', function() {
-                const busqueda = this.value.trim();
-                clearTimeout(timeoutBusqueda);
-                
-                if (busqueda.length < 2) {
-                    resultadosDiv.innerHTML = '';
-                    resultadosDiv.style.display = 'none';
-                    return;
-                }
-                
-                timeoutBusqueda = setTimeout(() => {
-                    buscarPacientes(busqueda);
-                }, 500);
-            });
-
-            async function buscarPacientes(busqueda) {
-                try {
-                    const respuesta = await fetch(`/citas/buscar-paciente?busqueda=${encodeURIComponent(busqueda)}`);
-                    const datos = await respuesta.json();
-                    mostrarResultados(datos.pacientes);
-                } catch (error) {
-                    console.error('Error al buscar pacientes:', error);
-                    resultadosDiv.innerHTML = '<div class="search-error">Error al buscar pacientes</div>';
-                    resultadosDiv.style.display = 'block';
-                }
-            }
-
-            function mostrarResultados(pacientes) {
-                if (pacientes.length === 0) {
-                    resultadosDiv.innerHTML = '<div class="search-no-results">No se encontraron pacientes</div>';
-                    resultadosDiv.style.display = 'block';
-                    return;
-                }
-                
-                let html = '<ul class="search-list">';
-                pacientes.forEach(paciente => {
-                    html += `
-                        <li class="search-item" data-id="${paciente._id}" data-nombre="${paciente.nombre} ${paciente.apellidos}" data-documento="${paciente.tipoDocumento}-${paciente.numeroDocumento}">
-                            <strong>${paciente.nombre} ${paciente.apellidos}</strong>
-                            <br>
-                            <small>${paciente.tipoDocumento}-${paciente.numeroDocumento} | Edad: ${paciente.edad} años</small>
-                        </li>
-                    `;
-                });
-                html += '</ul>';
-                
-                resultadosDiv.innerHTML = html;
-                resultadosDiv.style.display = 'block';
-                
-                const items = resultadosDiv.querySelectorAll('.search-item');
-                items.forEach(item => {
-                    item.addEventListener('click', function() {
-                        seleccionarPaciente(this.dataset.id, this.dataset.nombre, this.dataset.documento);
-                    });
-                });
-            }
-
-            function seleccionarPaciente(id, nombre, documento) {
-                pacienteIdInput.value = id;
-                pacienteSeleccionadoDiv.innerHTML = `
-                    <div class="paciente-badge">
-                        <strong>Paciente seleccionado:</strong> ${nombre} (${documento})
-                        <button type="button" class="btn-remove" onclick="limpiarSeleccion()">✕</button>
-                    </div>
-                `;
-                inputBusqueda.value = '';
-                resultadosDiv.innerHTML = '';
-                resultadosDiv.style.display = 'none';
-            }
-
-            window.limpiarSeleccion = function() {
-                pacienteIdInput.value = '';
-                pacienteSeleccionadoDiv.innerHTML = '';
-            };
-
-            document.addEventListener('click', function(e) {
-                if (e.target !== inputBusqueda && !resultadosDiv.contains(e.target)) {
-                    resultadosDiv.style.display = 'none';
-                }
-            });
-        });
-    </script>
+    <script src="/js/citas.js"></script>
 </body>
 </html>

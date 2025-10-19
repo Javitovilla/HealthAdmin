@@ -19,12 +19,28 @@ const usuarioSchema = new mongoose.Schema({
     password: {
         type: String,
         required: [true, 'La contraseña es obligatoria'],
-        minlength: [8, 'La contraseña debe tener mínimo 8 caracteres']
+        minlength: [6, 'La contraseña debe tener mínimo 6 caracteres']
     },
     rol: {
         type: String,
-        enum: ['administrativo', 'asistencial'],
+        enum: ['administrador', 'medico', 'enfermera', 'auxiliar_administrativo', 'auxiliar_enfermeria', 'administrativo', 'asistencial'],
         required: [true, 'El rol es obligatorio']
+    },
+    cedula: {
+        type: String,
+        trim: true
+    },
+    telefono: {
+        type: String,
+        trim: true
+    },
+    especialidad: {
+        type: String,
+        trim: true
+    },
+    activo: {
+        type: Boolean,
+        default: true
     },
     fechaCreacion: {
         type: Date,

@@ -1,30 +1,25 @@
 const express = require('express');
 const router = express.Router();
 const pacienteController = require('../controllers/pacienteController');
-const { isAuthenticated } = require('../middleware/auth');
+const { requireLogin } = require('../middleware/auth');
 
 // Todas las rutas requieren autenticación
-router.use(isAuthenticated);
+router.use(requireLogin);
 
-// Listar pacientes
+// Lista de pacientes
 router.get('/', pacienteController.listarPacientes);
 
-// Buscar pacientes
-router.get('/buscar', pacienteController.buscarPacientes);
+// Formulario nuevo paciente
+router.get('/nuevo', pacienteController.mostrarFormulario);
 
-// Mostrar formulario de registro
-router.get('/nuevo', pacienteController.mostrarFormularioRegistro);
-
-// Registrar paciente
-router.post('/nuevo', pacienteController.registrarPaciente);
+// Crear paciente
+router.post('/nuevo', pacienteController.crearPaciente);
 
 // Ver detalle
 router.get('/:id', pacienteController.verDetalle);
 
-// Mostrar formulario de edición
+// Editar paciente
 router.get('/:id/editar', pacienteController.mostrarFormularioEdicion);
-
-// Actualizar paciente
 router.post('/:id/editar', pacienteController.actualizarPaciente);
 
 // Eliminar paciente

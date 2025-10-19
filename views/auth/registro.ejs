@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <%- include('../partials/head') %>
+</head>
+<body>
+    <%- include('../partials/navbar') %>
+
+    <div class="container">
+        <div class="form-container">
+            <h2><i class="fas fa-user-plus"></i> <%= title %></h2>
+
+            <% if (error) { %>
+                <div class="alert alert-error">
+                    <i class="fas fa-exclamation-circle"></i> <%= error %>
+                </div>
+            <% } %>
+
+            <form action="/auth/registro" method="POST" id="formRegistro">
+                <div class="form-group">
+                    <label for="nombre">
+                        <i class="fas fa-user"></i> Nombre Completo *
+                    </label>
+                    <input type="text" id="nombre" name="nombre" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="cedula">
+                        <i class="fas fa-id-card"></i> Cédula *
+                    </label>
+                    <input type="text" id="cedula" name="cedula" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="email">
+                        <i class="fas fa-envelope"></i> Email *
+                    </label>
+                    <input type="email" id="email" name="email" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="telefono">
+                        <i class="fas fa-phone"></i> Teléfono *
+                    </label>
+                    <input type="text" id="telefono" name="telefono" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="rol">
+                        <i class="fas fa-user-tag"></i> Rol *
+                    </label>
+                    <select id="rol" name="rol" required>
+                        <option value="">Seleccione un rol</option>
+                        <option value="administrador">Administrador</option>
+                        <option value="medico">Médico</option>
+                        <option value="enfermera">Enfermera</option>
+                        <option value="auxiliar_administrativo">Auxiliar Administrativo</option>
+                        <option value="auxiliar_enfermeria">Auxiliar de Enfermería</option>
+                    </select>
+                </div>
+
+                <div class="form-group" id="especialidadGroup" style="display: none;">
+                    <label for="especialidad">
+                        <i class="fas fa-stethoscope"></i> Especialidad Médica
+                    </label>
+                    <input type="text" id="especialidad" name="especialidad" 
+                           placeholder="Ej: Medicina General, Pediatría, etc.">
+                </div>
+
+                <div class="form-group">
+                    <label for="password">
+                        <i class="fas fa-lock"></i> Contraseña *
+                    </label>
+                    <input type="password" id="password" name="password" 
+                           required minlength="6">
+                    <small>Mínimo 6 caracteres</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="confirmarPassword">
+                        <i class="fas fa-lock"></i> Confirmar Contraseña *
+                    </label>
+                    <input type="password" id="confirmarPassword" 
+                           required minlength="6">
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save"></i> Registrar Usuario
+                    </button>
+                    <a href="/usuarios/lista" class="btn btn-secondary">
+                        <i class="fas fa-times"></i> Cancelar
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Mostrar campo de especialidad solo si es médico
+        document.getElementById('rol').addEventListener('change', function() {
+            const especialidadGroup = document.getElementById('especialidadGroup');
+            const especialidadInput = document.getElementById('especialidad');
+            
+            if (this.value === 'medico') {
+                especialidadGroup.style.display = 'block';
+                especialidadInput.required = true;
+            } else {
+                especialidadGroup.style.display = 'none';
+                especialidadInput.required = false;
+                especialidadInput.value = '';
+            }
+        });
+
+        // Validar contraseñas
+        document.getElementById('formRegistro').addEventListener('submit', function(e) {
+            const password = document.getElementById('password').value;
+            const confirmar = document.getElementById('confirmarPassword').value;
+
+            if (password !== confirmar) {
+                e.preventDefault();
+                alert('Las contraseñas no coinciden');
+            }
+        });
+    </script>
+</body>
+</html>

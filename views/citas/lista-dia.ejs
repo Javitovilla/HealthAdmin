@@ -1,85 +1,84 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Citas del Día - HealthAdmin</title>
-    <link rel="stylesheet" href="/css/styles.css">
+    <%- include('../partials/head') %>
 </head>
 <body>
-    <div class="dashboard">
-        <!-- Header -->
-        <header class="dashboard-header">
-            <h1>HealthAdmin</h1>
-            <nav class="nav-menu">
-                <a href="/dashboard">Dashboard</a>
-                <a href="/pacientes">Pacientes</a>
-                <a href="/citas" class="active">Citas</a>
-                <span class="usuario-info">
-                    <%= usuario.nombre %> (<%= usuario.rol === 'administrativo' ? 'Administrativo' : 'Asistencial' %>)
-                </span>
-                <a href="/logout" class="btn-logout">Cerrar Sesión</a>
-            </nav>
-        </header>
+    <%- include('../partials/navbar') %>
 
-        <!-- Main Content -->
-        <main class="dashboard-main">
-            <div class="page-header">
-                <h2>Citas del Día - <%= fecha.toLocaleDateString('es-CO', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }) %></h2>
-                <div>
-                    <a href="/citas/agendar" class="btn btn-primary">Agendar Cita</a>
-                    <a href="/citas" class="btn btn-secondary">Ver Todas</a>
-                </div>
+    <div class="container">
+        <div class="page-header">
+            <h2>
+                <i class="fas fa-calendar-day"></i> 
+                Citas del Día - <%= fecha.toLocaleDateString('es-CO', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }) %>
+            </h2>
+            <div>
+                <a href="/citas/nueva" class="btn btn-success">
+                    <i class="fas fa-calendar-plus"></i> Agendar Cita
+                </a>
+                <a href="/citas/lista" class="btn btn-secondary">
+                    <i class="fas fa-list"></i> Ver Todas
+                </a>
             </div>
+        </div>
 
-            <!-- Mensaje -->
-            <% if (mensaje) { %>
-                <div class="alert alert-success">
-                    <%= mensaje %>
-                </div>
-            <% } %>
+        <% if (mensaje) { %>
+            <div class="alert alert-success">
+                <i class="fas fa-check-circle"></i> <%= mensaje %>
+            </div>
+        <% } %>
 
-            <!-- Lista de citas -->
-            <div class="citas-container">
-                <% if (citas.length === 0) { %>
-                    <div class="no-data">
-                        <p>No hay citas programadas para hoy</p>
-                    </div>
-                <% } else { %>
-                    <div class="citas-grid">
+        <% if (citas.length === 0) { %>
+            <div class="empty-state">
+                <i class="fas fa-calendar-times"></i>
+                <p>No hay citas programadas para hoy</p>
+            </div>
+        <% } else { %>
+            <div class="table-container">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Hora</th>
+                            <th>Paciente</th>
+                            <th>Documento</th>
+                            <th>Médico</th>
+                            <th>Motivo</th>
+                            <th>Estado</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
                         <% citas.forEach(cita => { %>
-                            <div class="cita-card <%= cita.estado %>">
-                                <div class="cita-header">
-                                    <span class="cita-hora"><%= cita.hora %></span>
-                                    <span class="cita-estado estado-<%= cita.estado %>">
+                            <tr>
+                                <td><strong><%= cita.hora %></strong></td>
+                                <td><%= cita.paciente.nombreCompleto %></td>
+                                <td><%= cita.paciente.tipoDocumento %>-<%= cita.paciente.numeroDocumento %></td>
+                                <td><%= cita.medicoAsignado.nombre %></td>
+                                <td><%= cita.motivoConsulta.substring(0, 50) %>...</td>
+                                <td>
+                                    <span class="status-badge status-<%= cita.estado %>">
                                         <%= cita.estado === 'pendiente' ? 'Pendiente' : cita.estado === 'atendida' ? 'Atendida' : 'Cancelada' %>
                                     </span>
-                                </div>
-                                <div class="cita-body">
-                                    <h3><%= cita.paciente.nombreCompleto %></h3>
-                                    <p><strong>Documento:</strong> <%= cita.paciente.tipoDocumento %>-<%= cita.paciente.numeroDocumento %></p>
-                                    <p><strong>Médico:</strong> <%= cita.medicoAsignado.nombre %></p>
-                                    <p><strong>Motivo:</strong> <%= cita.motivoConsulta %></p>
-                                </div>
-                                <div class="cita-actions">
-                                    <a href="/citas/<%= cita._id %>" class="btn btn-sm btn-info">Ver Detalle</a>
+                                </td>
+                                <td>
+                                    <a href="/citas/<%= cita._id %>" class="btn btn-sm btn-primary">
+                                        <i class="fas fa-eye"></i> Ver
+                                    </a>
                                     <% if (cita.estado === 'pendiente') { %>
                                         <form action="/citas/<%= cita._id %>/estado" method="POST" style="display: inline;">
                                             <input type="hidden" name="estado" value="atendida">
-                                            <button type="submit" class="btn btn-sm btn-success">Marcar Atendida</button>
-                                        </form>
-                                        <form action="/citas/<%= cita._id %>/estado" method="POST" style="display: inline;">
-                                            <input type="hidden" name="estado" value="cancelada">
-                                            <button type="submit" class="btn btn-sm btn-danger">Cancelar</button>
+                                            <button type="submit" class="btn btn-sm btn-success">
+                                                <i class="fas fa-check"></i> Atender
+                                            </button>
                                         </form>
                                     <% } %>
-                                </div>
-                            </div>
+                                </td>
+                            </tr>
                         <% }); %>
-                    </div>
-                <% } %>
+                    </tbody>
+                </table>
             </div>
-        </main>
+        <% } %>
     </div>
 </body>
 </html>

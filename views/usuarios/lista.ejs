@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <%- include('../partials/head') %>
+</head>
+<body>
+    <%- include('../partials/navbar') %>
+
+    <div class="container">
+        <div class="page-header">
+            <h2><i class="fas fa-users"></i> <%= title %></h2>
+            <a href="/auth/registro" class="btn btn-primary">
+                <i class="fas fa-user-plus"></i> Nuevo Usuario
+            </a>
+        </div>
+
+        <% if (mensaje) { %>
+            <div class="alert alert-<%= mensaje.tipo %>">
+                <i class="fas fa-check-circle"></i> <%= mensaje.texto %>
+            </div>
+        <% } %>
+
+        <div class="card">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Nombre</th>
+                        <th>Cédula</th>
+                        <th>Email</th>
+                        <th>Rol</th>
+                        <th>Especialidad</th>
+                        <th>Estado</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% if (usuarios.length === 0) { %>
+                        <tr>
+                            <td colspan="7" style="text-align: center;">
+                                No hay usuarios registrados
+                            </td>
+                        </tr>
+                    <% } else { %>
+                        <% usuarios.forEach(user => { %>
+                            <tr>
+                                <td><%= user.nombre %></td>
+                                <td><%= user.cedula %></td>
+                                <td><%= user.email %></td>
+                                <td>
+                                    <span class="badge badge-<%= user.rol %>">
+                                        <%= user.rol.replace('_', ' ').toUpperCase() %>
+                                    </span>
+                                </td>
+                                <td><%= user.especialidad || '-' %></td>
+                                <td>
+                                    <span class="badge badge-<%= user.activo ? 'success' : 'danger' %>">
+                                        <%= user.activo ? 'Activo' : 'Inactivo' %>
+                                    </span>
+                                </td>
+                                <td>
+                                    <button onclick="toggleEstado('<%= user._id %>')" 
+                                            class="btn btn-sm btn-warning">
+                                        <i class="fas fa-<%= user.activo ? 'ban' : 'check' %>"></i>
+                                        <%= user.activo ? 'Desactivar' : 'Activar' %>
+                                    </button>
+                                </td>
+                            </tr>
+                        <% }) %>
+                    <% } %>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        async function toggleEstado(id) {
+            if (!confirm('¿Estás seguro de cambiar el estado de este usuario?')) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`/auth/usuarios/${id}/toggle`, {
+                    method: 'POST'
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    alert(data.mensaje);
+                    location.reload();
+                } else {
+                    alert('Error al cambiar estado');
+                }
+            } catch (error) {
+                console.error(error);
+                alert('Error al cambiar estado');
+            }
+        }
+    </script>
+</body>
+</html>

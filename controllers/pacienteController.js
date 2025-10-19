@@ -2,7 +2,7 @@ const Paciente = require('../models/Paciente');
 const HistoriaClinica = require('../models/HistoriaClinica');
 
 // Mostrar formulario de registro
-const mostrarFormularioRegistro = (req, res) => {
+exports.mostrarFormulario = (req, res) => {
     res.render('pacientes/formulario', {
         usuario: req.session.usuario,
         paciente: null,
@@ -12,7 +12,7 @@ const mostrarFormularioRegistro = (req, res) => {
 };
 
 // Registrar nuevo paciente
-const registrarPaciente = async (req, res) => {
+exports.crearPaciente = async (req, res) => {
     try {
         const { nombre, apellidos, tipoDocumento, numeroDocumento, 
                 fechaNacimiento, genero, telefono, email } = req.body;
@@ -61,7 +61,7 @@ const registrarPaciente = async (req, res) => {
 };
 
 // Listar pacientes con paginación
-const listarPacientes = async (req, res) => {
+exports.listarPacientes = async (req, res) => {
     try {
         const pagina = parseInt(req.query.pagina) || 1;
         const limite = 15;
@@ -90,7 +90,7 @@ const listarPacientes = async (req, res) => {
 };
 
 // Buscar pacientes
-const buscarPacientes = async (req, res) => {
+exports.buscarPacientes = async (req, res) => {
     try {
         const { busqueda } = req.query;
 
@@ -123,7 +123,7 @@ const buscarPacientes = async (req, res) => {
 };
 
 // Ver detalle de paciente
-const verDetalle = async (req, res) => {
+exports.verDetalle = async (req, res) => {
     try {
         const paciente = await Paciente.findById(req.params.id);
         
@@ -143,7 +143,7 @@ const verDetalle = async (req, res) => {
 };
 
 // Mostrar formulario de edición
-const mostrarFormularioEdicion = async (req, res) => {
+exports.mostrarFormularioEdicion = async (req, res) => {
     try {
         const paciente = await Paciente.findById(req.params.id);
         
@@ -165,7 +165,7 @@ const mostrarFormularioEdicion = async (req, res) => {
 };
 
 // Actualizar paciente
-const actualizarPaciente = async (req, res) => {
+exports.actualizarPaciente = async (req, res) => {
     try {
         const { nombre, apellidos, telefono, email } = req.body;
 
@@ -191,7 +191,7 @@ const actualizarPaciente = async (req, res) => {
 };
 
 // Eliminar paciente (soft delete)
-const eliminarPaciente = async (req, res) => {
+exports.eliminarPaciente = async (req, res) => {
     try {
         await Paciente.findByIdAndUpdate(req.params.id, {
             activo: false
@@ -203,15 +203,4 @@ const eliminarPaciente = async (req, res) => {
         console.error('Error al eliminar paciente:', error);
         res.redirect('/pacientes?mensaje=Error al eliminar el paciente');
     }
-};
-
-module.exports = {
-    mostrarFormularioRegistro,
-    registrarPaciente,
-    listarPacientes,
-    buscarPacientes,
-    verDetalle,
-    mostrarFormularioEdicion,
-    actualizarPaciente,
-    eliminarPaciente
 };
