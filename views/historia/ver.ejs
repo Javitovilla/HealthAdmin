@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <%- include('../partials/head') %>
+</head>
+<body>
+    <%- include('../partials/navbar') %>
+
+    <div class="container">
+        <div class="page-header">
+            <h2><i class="fas fa-file-medical"></i> Historia Clínica</h2>
+            <div>
+                <a href="/historia/<%= paciente._id %>/editar" class="btn btn-warning">
+                    <i class="fas fa-edit"></i> Editar Información
+                </a>
+                <a href="/historia/<%= paciente._id %>/pdf" class="btn btn-danger" target="_blank">
+                    <i class="fas fa-file-pdf"></i> Generar PDF
+                </a>
+                <a href="/pacientes/<%= paciente._id %>" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left"></i> Volver
+                </a>
+            </div>
+        </div>
+
+        <!-- Información del Paciente -->
+        <div class="form-card">
+            <h3><i class="fas fa-user"></i> Información del Paciente</h3>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 15px;">
+                <div><strong>Nombre:</strong> <%= paciente.nombreCompleto %></div>
+                <div><strong>Documento:</strong> <%= paciente.tipoDocumento %>-<%= paciente.numeroDocumento %></div>
+                <div><strong>Edad:</strong> <%= paciente.edad %> años</div>
+                <div><strong>Tipo de Sangre:</strong> <%= historia.tipoSangre %></div>
+            </div>
+        </div>
+
+        <!-- Información Médica -->
+        <div class="form-card" style="margin-top: 20px;">
+            <h3><i class="fas fa-heartbeat"></i> Información Médica</h3>
+            
+            <div style="margin-top: 15px;">
+                <h4>Alergias:</h4>
+                <% if (historia.alergias.length > 0) { %>
+                    <ul>
+                        <% historia.alergias.forEach(alergia => { %>
+                            <li><strong><%= alergia.tipo %>:</strong> <%= alergia.descripcion %></li>
+                        <% }); %>
+                    </ul>
+                <% } else { %>
+                    <p style="color: #666;">No registra alergias</p>
+                <% } %>
+            </div>
+
+            <div style="margin-top: 15px;">
+                <h4>Enfermedades Preexistentes:</h4>
+                <% if (historia.enfermedadesPreexistentes.length > 0) { %>
+                    <ul>
+                        <% historia.enfermedadesPreexistentes.forEach(enfermedad => { %>
+                            <li><%= enfermedad %></li>
+                        <% }); %>
+                    </ul>
+                <% } else { %>
+                    <p style="color: #666;">No registra enfermedades preexistentes</p>
+                <% } %>
+            </div>
+
+            <div style="margin-top: 15px;">
+                <h4>Medicamentos Actuales:</h4>
+                <% if (historia.medicamentosActuales.length > 0) { %>
+                    <ul>
+                        <% historia.medicamentosActuales.forEach(med => { %>
+                            <li><strong><%= med.nombre %></strong> - <%= med.dosis %> - <%= med.frecuencia %></li>
+                        <% }); %>
+                    </ul>
+                <% } else { %>
+                    <p style="color: #666;">No registra medicamentos actuales</p>
+                <% } %>
+            </div>
+        </div>
+
+        <!-- Agregar Nueva Consulta -->
+        <div class="form-card" style="margin-top: 20px;">
+            <h3><i class="fas fa-plus-circle"></i> Agregar Nueva Consulta</h3>
+            <form action="/historia/<%= paciente._id %>/consulta" method="POST">
+                <div class="form-group">
+                    <label for="motivo">Motivo de Consulta *</label>
+                    <textarea id="motivo" name="motivo" rows="2" required></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="diagnostico">Diagnóstico *</label>
+                    <textarea id="diagnostico" name="diagnostico" rows="2" required></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="tratamiento">Tratamiento *</label>
+                    <textarea id="tratamiento" name="tratamiento" rows="2" required></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="observaciones">Observaciones</label>
+                    <textarea id="observaciones" name="observaciones" rows="2"></textarea>
+                </div>
+
+                <h4 style="margin-top: 20px;">Signos Vitales</h4>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
+                    <div class="form-group">
+                        <label for="presionArterial">Presión Arterial</label>
+                        <input type="text" id="presionArterial" name="presionArterial" placeholder="120/80">
+                    </div>
+                    <div class="form-group">
+                        <label for="frecuenciaCardiaca">Frecuencia Cardíaca (bpm)</label>
+                        <input type="number" id="frecuenciaCardiaca" name="frecuenciaCardiaca">
+                    </div>
+                    <div class="form-group">
+                        <label for="temperatura">Temperatura (°C)</label>
+                        <input type="number" step="0.1" id="temperatura" name="temperatura">
+                    </div>
+                    <div class="form-group">
+                        <label for="peso">Peso (kg)</label>
+                        <input type="number" step="0.1" id="peso" name="peso">
+                    </div>
+                    <div class="form-group">
+                        <label for="altura">Altura (cm)</label>
+                        <input type="number" id="altura" name="altura">
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-success">
+                        <i class="fas fa-save"></i> Guardar Consulta
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Historial de Consultas -->
+        <div class="form-card" style="margin-top: 20px;">
+            <h3><i class="fas fa-history"></i> Historial de Consultas</h3>
+            
+            <% if (historia.consultas.length > 0) { %>
+                <% historia.consultas.slice().reverse().forEach((consulta, index) => { %>
+                    <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin-top: 15px; border-left: 4px solid #667eea;">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                            <strong style="color: #667eea;">
+                                Consulta del <%= new Date(consulta.fecha).toLocaleDateString('es-CO') %>
+                            </strong>
+                            <span style="color: #666;">
+                                Dr(a). <%= consulta.medico ? consulta.medico.nombre : 'N/A' %>
+                            </span>
+                        </div>
+                        <p><strong>Motivo:</strong> <%= consulta.motivo %></p>
+                        <p><strong>Diagnóstico:</strong> <%= consulta.diagnostico %></p>
+                        <p><strong>Tratamiento:</strong> <%= consulta.tratamiento %></p>
+                        <% if (consulta.observaciones) { %>
+                            <p><strong>Observaciones:</strong> <%= consulta.observaciones %></p>
+                        <% } %>
+                        <% if (consulta.signosVitales && (consulta.signosVitales.presionArterial || consulta.signosVitales.temperatura)) { %>
+                            <div style="margin-top: 10px; padding-top: 10px; border-top: 1px solid #ddd;">
+                                <small style="color: #666;">
+                                    <strong>Signos Vitales:</strong>
+                                    <% if (consulta.signosVitales.presionArterial) { %>
+                                        PA: <%= consulta.signosVitales.presionArterial %> |
+                                    <% } %>
+                                    <% if (consulta.signosVitales.frecuenciaCardiaca) { %>
+                                        FC: <%= consulta.signosVitales.frecuenciaCardiaca %> bpm |
+                                    <% } %>
+                                    <% if (consulta.signosVitales.temperatura) { %>
+                                        Temp: <%= consulta.signosVitales.temperatura %>°C |
+                                    <% } %>
+                                    <% if (consulta.signosVitales.peso) { %>
+                                        Peso: <%= consulta.signosVitales.peso %> kg |
+                                    <% } %>
+                                    <% if (consulta.signosVitales.altura) { %>
+                                        Altura: <%= consulta.signosVitales.altura %> cm
+                                    <% } %>
+                                </small>
+                            </div>
+                        <% } %>
+                    </div>
+                <% }); %>
+            <% } else { %>
+                <p style="text-align: center; color: #666; padding: 40px;">
+                    No hay consultas registradas
+                </p>
+            <% } %>
+        </div>
+    </div>
+</body>
+</html>

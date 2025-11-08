@@ -8,10 +8,15 @@
 
     <div class="container">
         <div class="page-header">
-            <h2><i class="fas fa-users"></i> Gestión de Pacientes</h2>
-            <a href="/pacientes/nuevo" class="btn btn-primary">
-                <i class="fas fa-user-plus"></i> Nuevo Paciente
-            </a>
+            <h2><i class="fas fa-calendar"></i> Todas las Citas</h2>
+            <div>
+                <a href="/citas/nueva" class="btn btn-success">
+                    <i class="fas fa-calendar-plus"></i> Nueva Cita
+                </a>
+                <a href="/citas/dia" class="btn btn-primary">
+                    <i class="fas fa-calendar-day"></i> Citas del Día
+                </a>
+            </div>
         </div>
 
         <% if (mensaje) { %>
@@ -20,73 +25,47 @@
             </div>
         <% } %>
 
-        <form action="/pacientes/buscar" method="GET" class="search-bar">
-            <input 
-                type="text" 
-                name="busqueda" 
-                placeholder="Buscar por nombre o documento..."
-            >
-            <button type="submit">
-                <i class="fas fa-search"></i> Buscar
-            </button>
-        </form>
-
-        <div class="table-container">
-            <% if (pacientes.length === 0) { %>
-                <div class="empty-state">
-                    <i class="fas fa-user-slash"></i>
-                    <p>No hay pacientes registrados</p>
-                </div>
-            <% } else { %>
+        <% if (citas.length === 0) { %>
+            <div class="empty-state">
+                <i class="fas fa-calendar-times"></i>
+                <p>No hay citas registradas</p>
+            </div>
+        <% } else { %>
+            <div class="table-container">
                 <table class="table">
                     <thead>
                         <tr>
-                            <th>Nombre Completo</th>
-                            <th>Documento</th>
-                            <th>Teléfono</th>
-                            <th>Edad</th>
+                            <th>Fecha</th>
+                            <th>Hora</th>
+                            <th>Paciente</th>
+                            <th>Médico</th>
+                            <th>Estado</th>
                             <th>Acciones</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <% pacientes.forEach(paciente => { %>
+                        <% citas.forEach(cita => { %>
                             <tr>
-                                <td><%= paciente.nombreCompleto %></td>
-                                <td><%= paciente.tipoDocumento %>-<%= paciente.numeroDocumento %></td>
-                                <td><%= paciente.telefono %></td>
-                                <td><%= paciente.edad %> años</td>
+                                <td><%= new Date(cita.fecha).toLocaleDateString('es-CO') %></td>
+                                <td><strong><%= cita.hora %></strong></td>
+                                <td><%= cita.paciente.nombreCompleto %></td>
+                                <td><%= cita.medicoAsignado.nombre %></td>
                                 <td>
-                                    <a href="/pacientes/<%= paciente._id %>" class="btn btn-sm btn-primary">
+                                    <span class="status-badge status-<%= cita.estado %>">
+                                        <%= cita.estado %>
+                                    </span>
+                                </td>
+                                <td>
+                                    <a href="/citas/<%= cita._id %>" class="btn btn-sm btn-primary">
                                         <i class="fas fa-eye"></i> Ver
-                                    </a>
-                                    <a href="/pacientes/<%= paciente._id %>/editar" class="btn btn-sm btn-warning">
-                                        <i class="fas fa-edit"></i> Editar
                                     </a>
                                 </td>
                             </tr>
                         <% }); %>
                     </tbody>
                 </table>
-
-                <% if (totalPaginas > 1) { %>
-                    <div class="pagination">
-                        <% if (paginaActual > 1) { %>
-                            <a href="/pacientes?pagina=<%= paginaActual - 1 %>">
-                                <i class="fas fa-chevron-left"></i> Anterior
-                            </a>
-                        <% } %>
-                        
-                        <span class="active">Página <%= paginaActual %> de <%= totalPaginas %></span>
-                        
-                        <% if (paginaActual < totalPaginas) { %>
-                            <a href="/pacientes?pagina=<%= paginaActual + 1 %>">
-                                Siguiente <i class="fas fa-chevron-right"></i>
-                            </a>
-                        <% } %>
-                    </div>
-                <% } %>
-            <% } %>
-        </div>
+            </div>
+        <% } %>
     </div>
 </body>
 </html>

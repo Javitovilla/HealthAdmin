@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <%- include('../partials/head') %>
+</head>
+<body>
+    <%- include('../partials/navbar') %>
+
+    <div class="container">
+        <div class="page-header">
+            <h2><i class="fas fa-edit"></i> Editar Historia Clínica</h2>
+            <a href="/historia/<%= paciente._id %>" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i> Volver
+            </a>
+        </div>
+
+        <% if (error) { %>
+            <div class="alert alert-error">
+                <i class="fas fa-exclamation-circle"></i> <%= error %>
+            </div>
+        <% } %>
+
+        <div class="form-card">
+            <h3><i class="fas fa-user"></i> <%= paciente.nombreCompleto %></h3>
+            <p style="color: #666; margin-bottom: 20px;">
+                <%= paciente.tipoDocumento %>-<%= paciente.numeroDocumento %> | <%= paciente.edad %> años
+            </p>
+
+            <form action="/historia/<%= paciente._id %>/actualizar" method="POST">
+                <!-- Tipo de Sangre -->
+                <div class="form-group">
+                    <label for="tipoSangre">
+                        <i class="fas fa-tint"></i> Tipo de Sangre
+                    </label>
+                    <select id="tipoSangre" name="tipoSangre">
+                        <option value="Desconocido" <%= historia.tipoSangre === 'Desconocido' ? 'selected' : '' %>>Desconocido</option>
+                        <option value="A+" <%= historia.tipoSangre === 'A+' ? 'selected' : '' %>>A+</option>
+                        <option value="A-" <%= historia.tipoSangre === 'A-' ? 'selected' : '' %>>A-</option>
+                        <option value="B+" <%= historia.tipoSangre === 'B+' ? 'selected' : '' %>>B+</option>
+                        <option value="B-" <%= historia.tipoSangre === 'B-' ? 'selected' : '' %>>B-</option>
+                        <option value="AB+" <%= historia.tipoSangre === 'AB+' ? 'selected' : '' %>>AB+</option>
+                        <option value="AB-" <%= historia.tipoSangre === 'AB-' ? 'selected' : '' %>>AB-</option>
+                        <option value="O+" <%= historia.tipoSangre === 'O+' ? 'selected' : '' %>>O+</option>
+                        <option value="O-" <%= historia.tipoSangre === 'O-' ? 'selected' : '' %>>O-</option>
+                    </select>
+                </div>
+
+                <!-- Alergias -->
+                <div class="form-group">
+                    <label><i class="fas fa-allergies"></i> Alergias</label>
+                    <div id="alergiasContainer">
+                        <% if (historia.alergias.length > 0) { %>
+                            <% historia.alergias.forEach((alergia, index) => { %>
+                                <div class="alergia-item" style="display: grid; grid-template-columns: 1fr 2fr auto; gap: 10px; margin-bottom: 10px;">
+                                    <select name="alergiaTipo[]" class="form-control">
+                                        <option value="Medicamento" <%= alergia.tipo === 'Medicamento' ? 'selected' : '' %>>Medicamento</option>
+                                        <option value="Alimento" <%= alergia.tipo === 'Alimento' ? 'selected' : '' %>>Alimento</option>
+                                        <option value="Otro" <%= alergia.tipo === 'Otro' ? 'selected' : '' %>>Otro</option>
+                                    </select>
+                                    <input type="text" name="alergiaDesc[]" placeholder="Descripción" value="<%= alergia.descripcion %>" class="form-control">
+                                    <button type="button" class="btn btn-sm btn-danger" onclick="this.parentElement.remove()">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                            <% }); %>
+                        <% } %>
+                    </div>
+                    <button type="button" class="btn btn-sm btn-secondary" onclick="agregarAlergia()" style="margin-top: 10px;">
+                        <i class="fas fa-plus"></i> Agregar Alergia
+                    </button>
+                </div>
+
+                <!-- Enfermedades Preexistentes -->
+                <div class="form-group">
+                    <label for="enfermedadesPreexistentes">
+                        <i class="fas fa-disease"></i> Enfermedades Preexistentes
+                    </label>
+                    <textarea id="enfermedadesPreexistentes" name="enfermedadesPreexistentes" rows="3" placeholder="Separar por comas (ej: Diabetes, Hipertensión)"><%= historia.enfermedadesPreexistentes.join(', ') %></textarea>
+                    <small style="color: #666;">Separar cada enfermedad con una coma</small>
+                </div>
+
+                <!-- Medicamentos Actuales -->
+                <div class="form-group">
+                    <label><i class="fas fa-pills"></i> Medicamentos Actuales</label>
+                    <div id="medicamentosContainer">
+                        <% if (historia.medicamentosActuales.length > 0) { %>
+                            <% historia.medicamentosActuales.forEach((med, index) => { %>
+                                <div class="medicamento-item" style="display: grid; grid-template-columns: 2fr 1fr 1fr auto; gap: 10px; margin-bottom: 10px;">
+                                    <input type="text" name="medNombre[]" placeholder="Nombre del medicamento" value="<%= med.nombre %>" class="form-control">
+                                    <input type="text" name="medDosis[]" placeholder="Dosis" value="<%= med.dosis %>" class="form-control">
+                                    <input type="text" name="medFrecuencia[]" placeholder="Frecuencia" value="<%= med.frecuencia %>" class="form-control">
+                                    <button type="button" class="btn btn-sm btn-danger" onclick="this.parentElement.remove()">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                            <% }); %>
+                        <% } %>
+                    </div>
+                    <button type="button" class="btn btn-sm btn-secondary" onclick="agregarMedicamento()" style="margin-top: 10px;">
+                        <i class="fas fa-plus"></i> Agregar Medicamento
+                    </button>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-success">
+                        <i class="fas fa-save"></i> Guardar Cambios
+                    </button>
+                    <a href="/historia/<%= paciente._id %>" class="btn btn-secondary">
+                        <i class="fas fa-times"></i> Cancelar
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function agregarAlergia() {
+            const container = document.getElementById('alergiasContainer');
+            const div = document.createElement('div');
+            div.className = 'alergia-item';
+            div.style.cssText = 'display: grid; grid-template-columns: 1fr 2fr auto; gap: 10px; margin-bottom: 10px;';
+            div.innerHTML = `
+                <select name="alergiaTipo[]" class="form-control">
+                    <option value="Medicamento">Medicamento</option>
+                    <option value="Alimento">Alimento</option>
+                    <option value="Otro">Otro</option>
+                </select>
+                <input type="text" name="alergiaDesc[]" placeholder="Descripción" class="form-control">
+                <button type="button" class="btn btn-sm btn-danger" onclick="this.parentElement.remove()">
+                    <i class="fas fa-trash"></i>
+                </button>
+            `;
+            container.appendChild(div);
+        }
+
+        function agregarMedicamento() {
+            const container = document.getElementById('medicamentosContainer');
+            const div = document.createElement('div');
+            div.className = 'medicamento-item';
+            div.style.cssText = 'display: grid; grid-template-columns: 2fr 1fr 1fr auto; gap: 10px; margin-bottom: 10px;';
+            div.innerHTML = `
+                <input type="text" name="medNombre[]" placeholder="Nombre del medicamento" class="form-control">
+                <input type="text" name="medDosis[]" placeholder="Dosis" class="form-control">
+                <input type="text" name="medFrecuencia[]" placeholder="Frecuencia" class="form-control">
+                <button type="button" class="btn btn-sm btn-danger" onclick="this.parentElement.remove()">
+                    <i class="fas fa-trash"></i>
+                </button>
+            `;
+            container.appendChild(div);
+        }
+    </script>
+
+    <style>
+        .form-control {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+    </style>
+</body>
+</html>

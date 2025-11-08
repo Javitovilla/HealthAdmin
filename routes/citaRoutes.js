@@ -6,6 +6,9 @@ const { requireLogin } = require('../middleware/auth');
 // Todas las rutas requieren autenticación
 router.use(requireLogin);
 
+// API para buscar pacientes (DEBE IR ANTES de las rutas con :id)
+router.get('/api/buscar-pacientes', citaController.buscarPacientes);
+
 // Formulario de nueva cita
 router.get('/nueva', citaController.mostrarFormulario);
 
@@ -18,13 +21,10 @@ router.get('/lista', citaController.listarCitas);
 // Citas del día
 router.get('/dia', citaController.citasDelDia);
 
-// Detalle de una cita
-router.get('/:id', citaController.verDetalle);
-
 // Cambiar estado de cita
 router.post('/:id/estado', citaController.cambiarEstado);
 
-// API para buscar pacientes
-router.get('/api/buscar-pacientes', citaController.buscarPacientes);
+// Detalle de una cita (DEBE IR AL FINAL)
+router.get('/:id', citaController.verDetalle);
 
 module.exports = router;

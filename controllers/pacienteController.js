@@ -133,12 +133,13 @@ exports.verDetalle = async (req, res) => {
 
         res.render('pacientes/detalle', {
             usuario: req.session.usuario,
-            paciente
+            paciente,
+            error: null
         });
 
     } catch (error) {
         console.error('Error al ver detalle:', error);
-        res.redirect('/pacientes?mensaje=Error al cargar el paciente');
+        res.redirect('/pacientes?mensaje=Error al cargar paciente');
     }
 };
 
