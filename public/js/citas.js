@@ -1,28 +1,34 @@
-// Búsqueda de pacientes
+// ========================================
+// GESTIÓN DE CITAS - JavaScript
+// ========================================
+
 document.addEventListener('DOMContentLoaded', function() {
-    const inputBusqueda = document.getElementById('buscarPaciente');
-    if (!inputBusqueda) return;
-    
+    // ========================================
+    // BÚSQUEDA DE PACIENTES
+    // ========================================
+    const inputBusqueda = document.getElementById('busquedaPaciente');
     const resultadosDiv = document.getElementById('resultadosBusqueda');
     const pacienteIdInput = document.getElementById('pacienteId');
     const pacienteSeleccionadoDiv = document.getElementById('pacienteSeleccionado');
     
     let timeoutBusqueda = null;
 
-    inputBusqueda.addEventListener('input', function() {
-        const busqueda = this.value.trim();
-        clearTimeout(timeoutBusqueda);
-        
-        if (busqueda.length < 2) {
-            resultadosDiv.innerHTML = '';
-            resultadosDiv.style.display = 'none';
-            return;
-        }
-        
-        timeoutBusqueda = setTimeout(() => {
-            buscarPacientes(busqueda);
-        }, 500);
-    });
+    if (inputBusqueda) {
+        inputBusqueda.addEventListener('input', function() {
+            const busqueda = this.value.trim();
+            clearTimeout(timeoutBusqueda);
+            
+            if (busqueda.length < 2) {
+                resultadosDiv.innerHTML = '';
+                resultadosDiv.style.display = 'none';
+                return;
+            }
+            
+            timeoutBusqueda = setTimeout(() => {
+                buscarPacientes(busqueda);
+            }, 500);
+        });
+    }
 
     async function buscarPacientes(busqueda) {
         try {
@@ -37,7 +43,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function mostrarResultados(pacientes) {
-        if (pacientes.length === 0) {
+        if (!pacientes || pacientes.length === 0) {
             resultadosDiv.innerHTML = '<div style="padding: 10px; color: #666;">No se encontraron pacientes</div>';
             resultadosDiv.style.display = 'block';
             return;
@@ -79,8 +85,58 @@ document.addEventListener('DOMContentLoaded', function() {
         pacienteSeleccionadoDiv.innerHTML = '';
     };
 
+    // ========================================
+    // FILTRADO DE MÉDICOS POR ESPECIALIDAD
+    // ========================================
+    const especialidadSelect = document.getElementById('especialidad');
+    const medicoSelect = document.getElementById('medico');
+    
+    if (especialidadSelect && medicoSelect) {
+        especialidadSelect.addEventListener('change', async function() {
+            const especialidad = this.value;
+            
+            console.log('Especialidad seleccionada:', especialidad); // Debug
+            
+            // Limpiar select de médicos
+            medicoSelect.innerHTML = '<option value="">Cargando médicos...</option>';
+            medicoSelect.disabled = true;
+            
+            if (!especialidad) {
+                medicoSelect.innerHTML = '<option value="">Primero seleccione una especialidad</option>';
+                return;
+            }
+            
+            try {
+                // URL corregida para usar query parameters
+                const response = await fetch(`/citas/api/medicos?especialidad=${encodeURIComponent(especialidad)}`);
+                const data = await response.json();
+                
+                console.log('Respuesta del servidor:', data); // Debug
+                
+                const medicos = data.medicos || [];
+                
+                if (medicos.length === 0) {
+                    medicoSelect.innerHTML = '<option value="">No hay médicos disponibles en esta especialidad</option>';
+                } else {
+                    let options = '<option value="">Seleccione un médico</option>';
+                    medicos.forEach(medico => {
+                        options += `<option value="${medico._id}">${medico.nombre} - ${medico.especialidad}</option>`;
+                    });
+                    medicoSelect.innerHTML = options;
+                    medicoSelect.disabled = false;
+                }
+            } catch (error) {
+                console.error('Error al cargar médicos:', error);
+                medicoSelect.innerHTML = '<option value="">Error al cargar médicos</option>';
+            }
+        });
+    }
+
+    // ========================================
+    // CERRAR RESULTADOS AL HACER CLIC FUERA
+    // ========================================
     document.addEventListener('click', function(e) {
-        if (e.target !== inputBusqueda && !resultadosDiv.contains(e.target)) {
+        if (inputBusqueda && e.target !== inputBusqueda && !resultadosDiv.contains(e.target)) {
             resultadosDiv.style.display = 'none';
         }
     });

@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const historiaController = require('../controllers/historiaController');
-const { requireLogin } = require('../middleware/auth');
+const { requireLogin } = require('../middlewares/auth');
 
 // Todas las rutas requieren autenticación
 router.use(requireLogin);

@@ -15,14 +15,34 @@ const generarHorarios = () => {
 // Mostrar formulario de agendar cita
 const mostrarFormularioAgendar = async (req, res) => {
     try {
-        // Obtener médicos (usuarios asistenciales)
-        const medicos = await Usuario.find({ rol: 'asistencial' }).sort({ nombre: 1 });
+        // Definir TODAS las especialidades disponibles en el sistema
+        const todasLasEspecialidades = [
+            'Medicina General',
+            'Cardiología',
+            'Pediatría',
+            'Ginecología',
+            'Ortopedia',
+            'Dermatología',
+            'Neurología',
+            'Psiquiatría',
+            'Oftalmología',
+            'Otorrinolaringología',
+            'Medicina Interna',
+            'Cirugía General'
+        ];
+        
+        // Obtener solo médicos con especialidad definida
+        const medicos = await Usuario.find({ 
+            rol: 'asistencial',
+            especialidad: { $exists: true, $ne: '' }
+        }).sort({ especialidad: 1, nombre: 1 });
         
         const horarios = generarHorarios();
         
         res.render('citas/formulario', {
             usuario: req.session.usuario,
             medicos,
+            especialidades: todasLasEspecialidades, // Usar TODAS las especialidades
             horarios,
             pacienteSeleccionado: null,
             error: null,
@@ -108,7 +128,7 @@ const agendarCita = async (req, res) => {
             usuarioCreador: req.session.usuario.id
         });
 
-        res.redirect('/citas?mensaje=Cita agendada exitosamente');
+        res.redirect('/citas/dia?mensaje=Cita agendada exitosamente');
 
     } catch (error) {
         console.error('Error al agendar cita:', error);
@@ -237,7 +257,7 @@ const verDetalle = async (req, res) => {
             .populate('usuarioCreador', 'nombre');
 
         if (!cita) {
-            return res.redirect('/citas?mensaje=Cita no encontrada');
+            return res.redirect('/citas/dia?mensaje=Cita no encontrada');
         }
 
         res.render('citas/detalle', {
@@ -247,7 +267,60 @@ const verDetalle = async (req, res) => {
 
     } catch (error) {
         console.error('Error al ver detalle:', error);
-        res.redirect('/citas?mensaje=Error al cargar la cita');
+        res.redirect('/citas/dia?mensaje=Error al cargar la cita');
+    }
+};
+
+// API: Obtener médicos por especialidad
+const obtenerMedicosPorEspecialidad = async (req, res) => {
+    try {
+        const { especialidad } = req.query;
+        
+        console.log('Especialidad recibida:', especialidad); // Debug
+        
+        if (!especialidad) {
+            return res.json({ medicos: [] });
+        }
+
+        const medicos = await Usuario.find({ 
+            rol: 'asistencial',
+            especialidad: especialidad
+        }).sort({ nombre: 1 });
+
+        console.log('Médicos encontrados:', medicos.length); // Debug
+        
+        res.json({ medicos });
+
+    } catch (error) {
+        console.error('Error al obtener médicos:', error);
+        res.status(500).json({ error: 'Error al obtener médicos' });
+    }
+};
+
+// API: Obtener todas las especialidades
+const obtenerEspecialidades = async (req, res) => {
+    try {
+        // Devolver TODAS las especialidades disponibles
+        const todasLasEspecialidades = [
+            'Medicina General',
+            'Cardiología',
+            'Pediatría',
+            'Ginecología',
+            'Ortopedia',
+            'Dermatología',
+            'Neurología',
+            'Psiquiatría',
+            'Oftalmología',
+            'Otorrinolaringología',
+            'Medicina Interna',
+            'Cirugía General'
+        ];
+        
+        res.json({ especialidades: todasLasEspecialidades });
+
+    } catch (error) {
+        console.error('Error al obtener especialidades:', error);
+        res.status(500).json({ error: 'Error al obtener especialidades' });
     }
 };
 
@@ -257,6 +330,8 @@ module.exports = {
     listarCitas: listarTodasCitas,
     citasDelDia: listarCitasDelDia,
     buscarPacientes: buscarPacienteParaCita,
+    obtenerMedicosPorEspecialidad,
+    obtenerEspecialidades,
     verDetalle,
     cambiarEstado
 };

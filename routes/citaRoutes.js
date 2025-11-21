@@ -1,13 +1,19 @@
 const express = require('express');
 const router = express.Router();
 const citaController = require('../controllers/citaController');
-const { requireLogin } = require('../middleware/auth');
+const { requireLogin } = require('../middlewares/auth');
 
-// Todas las rutas requieren autenticación
+// Middleware de autenticación para todas las rutas
 router.use(requireLogin);
 
 // API para buscar pacientes (DEBE IR ANTES de las rutas con :id)
 router.get('/api/buscar-pacientes', citaController.buscarPacientes);
+
+// API para obtener médicos por especialidad - SIMPLIFICANDO EL NOMBRE
+router.get('/api/medicos', citaController.obtenerMedicosPorEspecialidad);
+
+// API para obtener todas las especialidades
+router.get('/api/especialidades', citaController.obtenerEspecialidades);
 
 // Formulario de nueva cita
 router.get('/nueva', citaController.mostrarFormulario);

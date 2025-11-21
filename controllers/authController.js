@@ -14,48 +14,48 @@ exports.login = async (req, res) => {
         const usuario = await Usuario.findOne({ email });
 
         if (!usuario) {
-            return res.render('login', { 
-                error: 'Email o contraseña incorrectos' 
+            return res.render('login', {
+                error: 'Email o contraseña incorrectos'
             });
         }
 
-        // Verificar contraseña
-        const esValida = await usuario.compararPassword(password);
+        // Verificar contraseña   
+        const esValida = await usuario.compararPassword(password);  
 
         if (!esValida) {
-            return res.render('login', { 
-                error: 'Email o contraseña incorrectos' 
+            return res.render('login', {
+                error: 'Email o contraseña incorrectos'
             });
         }
 
         // Verificar que el usuario esté activo
-        if (!usuario.activo) {
-            return res.render('login', { 
-                error: 'Tu cuenta está desactivada. Contacta al administrador.' 
+        if (!usuario.activo) {    
+            return res.render('login', {
+                error: 'Tu cuenta está desactivada. Contacta al administrador.'
             });
         }
 
         // Crear sesión
-        req.session.usuario = {
-            id: usuario._id,
+        req.session.usuario = {   
+            id: usuario._id,      
             nombre: usuario.nombre,
-            email: usuario.email,
-            rol: usuario.rol
+            email: usuario.email, 
+            rol: usuario.rol      
         };
 
-        // Redirigir al dashboard
+        // Redirigir al dashboard 
         res.redirect('/dashboard');
 
     } catch (error) {
         console.error('Error en login:', error);
-        res.render('login', { 
-            error: 'Error al iniciar sesión. Intenta de nuevo.' 
+        res.render('login', {     
+            error: 'Error al iniciar sesión. Intenta de nuevo.'     
         });
     }
 };
 
 // Cerrar sesión
-exports.logout = (req, res) => {
+exports.logout = (req, res) => {  
     req.session.destroy((err) => {
         if (err) {
             console.error('Error al cerrar sesión:', err);
@@ -66,8 +66,8 @@ exports.logout = (req, res) => {
 
 // Mostrar dashboard
 exports.mostrarDashboard = (req, res) => {
-    res.render('dashboard', { 
-        usuario: req.session.usuario 
+    res.render('dashboard', {     
+        usuario: req.session.usuario
     });
 };
 
@@ -80,8 +80,8 @@ exports.mostrarRegistro = async (req, res) => {
             usuario: req.session.usuario
         });
     } catch (error) {
-        console.error(error);
-        res.status(500).send('Error al cargar el formulario');
+        console.error(error);     
+        res.status(500).send('Error al cargar el formulario');      
     }
 };
 
@@ -91,8 +91,8 @@ exports.registrarUsuario = async (req, res) => {
         const { nombre, email, password, rol, cedula, telefono, especialidad } = req.body;
 
         // Validar que el email no exista
-        const usuarioExistente = await Usuario.findOne({ email });
-        if (usuarioExistente) {
+        const usuarioExistente = await Usuario.findOne({ email });  
+        if (usuarioExistente) {   
             return res.render('auth/registro', {
                 title: 'Registrar Nuevo Usuario',
                 error: 'El email ya está registrado',
@@ -100,7 +100,7 @@ exports.registrarUsuario = async (req, res) => {
             });
         }
 
-        // Crear el nuevo usuario
+        // Crear el nuevo usuario 
         const nuevoUsuario = new Usuario({
             nombre,
             email,
@@ -114,14 +114,14 @@ exports.registrarUsuario = async (req, res) => {
 
         await nuevoUsuario.save();
 
-        req.session.mensaje = {
-            tipo: 'success',
+        req.session.mensaje = {   
+            tipo: 'success',      
             texto: `Usuario ${nombre} creado exitosamente`
         };
 
         res.redirect('/auth/usuarios/lista');
     } catch (error) {
-        console.error(error);
+        console.error(error);     
         res.render('auth/registro', {
             title: 'Registrar Nuevo Usuario',
             error: 'Error al registrar el usuario',
@@ -130,11 +130,11 @@ exports.registrarUsuario = async (req, res) => {
     }
 };
 
-// Listar todos los usuarios
+// Listar todos los usuarios      
 exports.listarUsuarios = async (req, res) => {
     try {
         const usuarios = await Usuario.find().sort({ createdAt: -1 });
-        
+
         const mensaje = req.session.mensaje;
         delete req.session.mensaje;
 
@@ -145,29 +145,29 @@ exports.listarUsuarios = async (req, res) => {
             usuario: req.session.usuario
         });
     } catch (error) {
-        console.error(error);
+        console.error(error);     
         res.status(500).send('Error al cargar usuarios');
     }
 };
 
-// Activar/Desactivar usuario
+// Activar/Desactivar usuario     
 exports.toggleEstadoUsuario = async (req, res) => {
     try {
-        const usuario = await Usuario.findById(req.params.id);
+        const usuario = await Usuario.findById(req.params.id);      
         if (!usuario) {
             return res.status(404).json({ error: 'Usuario no encontrado' });
         }
 
         usuario.activo = !usuario.activo;
-        await usuario.save();
+        await usuario.save();     
 
-        res.json({ 
-            success: true, 
+        res.json({
+            success: true,        
             activo: usuario.activo,
             mensaje: `Usuario ${usuario.activo ? 'activado' : 'desactivado'} correctamente`
         });
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ error: 'Error al cambiar estado' });
+        console.error(error);     
+        res.status(500).json({ error: 'Error al cambiar estado' }); 
     }
 };

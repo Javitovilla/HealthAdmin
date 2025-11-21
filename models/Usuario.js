@@ -56,9 +56,9 @@ usuarioSchema.pre('save', async function(next) {
     }
     
     try {
-        // Generar salt y hashear
+        // Generar salt y hashear 
         const salt = await bcrypt.genSalt(10);
-        this.password = await bcrypt.hash(this.password, salt);
+        this.password = await bcrypt.hash(this.password, salt);     
         next();
     } catch (error) {
         next(error);
@@ -67,7 +67,7 @@ usuarioSchema.pre('save', async function(next) {
 
 // Método para comparar contraseñas
 usuarioSchema.methods.compararPassword = async function(passwordIngresada) {
-    return await bcrypt.compare(passwordIngresada, this.password);
+    return await bcrypt.compare(passwordIngresada, this.password);  
 };
 
 // Crear el modelo

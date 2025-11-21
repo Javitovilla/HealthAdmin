@@ -1,125 +1,190 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <%- include('../partials/head') %>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %> - HealthAdmin</title>
+    <link rel="stylesheet" href="/css/styles.css">
 </head>
 <body>
     <%- include('../partials/navbar') %>
-
+    
     <div class="container">
-        <div class="form-container">
-            <h2><i class="fas fa-user-plus"></i> <%= title %></h2>
+        <div class="page-header">
+            <h2>👤 <%= title %></h2>
+        </div>
 
-            <% if (error) { %>
-                <div class="alert alert-error">
-                    <i class="fas fa-exclamation-circle"></i> <%= error %>
-                </div>
-            <% } %>
+        <% if (error) { %>
+            <div class="alert alert-error">
+                <%= error %>
+            </div>
+        <% } %>
 
-            <form action="/auth/registro" method="POST" id="formRegistro">
-                <div class="form-group">
-                    <label for="nombre">
-                        <i class="fas fa-user"></i> Nombre Completo *
-                    </label>
-                    <input type="text" id="nombre" name="nombre" required>
-                </div>
-
-                <div class="form-group">
-                    <label for="cedula">
-                        <i class="fas fa-id-card"></i> Cédula *
-                    </label>
-                    <input type="text" id="cedula" name="cedula" required>
-                </div>
+        <div class="form-card">
+            <form action="/auth/registro" method="POST" id="formUsuario">
+                
+                <!-- Información Personal -->
+                <h3 style="margin-bottom: 20px; color: #2c3e50; border-bottom: 2px solid #06B6D4; padding-bottom: 10px;">
+                    📋 Información Personal
+                </h3>
 
                 <div class="form-group">
-                    <label for="email">
-                        <i class="fas fa-envelope"></i> Email *
-                    </label>
-                    <input type="email" id="email" name="email" required>
+                    <label for="nombre">Nombre Completo *</label>
+                    <input 
+                        type="text" 
+                        id="nombre" 
+                        name="nombre" 
+                        placeholder="Ej: Juan Pérez García"
+                        required
+                    >
                 </div>
 
                 <div class="form-group">
-                    <label for="telefono">
-                        <i class="fas fa-phone"></i> Teléfono *
-                    </label>
-                    <input type="text" id="telefono" name="telefono" required>
+                    <label for="cedula">Cédula *</label>
+                    <input 
+                        type="text" 
+                        id="cedula" 
+                        name="cedula" 
+                        placeholder="Ej: 1234567890"
+                        required
+                    >
                 </div>
 
                 <div class="form-group">
-                    <label for="rol">
-                        <i class="fas fa-user-tag"></i> Rol *
-                    </label>
+                    <label for="telefono">Teléfono *</label>
+                    <input 
+                        type="tel" 
+                        id="telefono" 
+                        name="telefono" 
+                        placeholder="Ej: 3001234567"
+                        required
+                    >
+                </div>
+
+                <!-- Información de Acceso -->
+                <h3 style="margin: 30px 0 20px; color: #2c3e50; border-bottom: 2px solid #06B6D4; padding-bottom: 10px;">
+                    🔐 Información de Acceso
+                </h3>
+
+                <div class="form-group">
+                    <label for="email">Correo Electrónico *</label>
+                    <input 
+                        type="email" 
+                        id="email" 
+                        name="email" 
+                        placeholder="usuario@ejemplo.com"
+                        required
+                    >
+                    <small style="color: #666;">Este será el correo para iniciar sesión</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Contraseña *</label>
+                    <input 
+                        type="password" 
+                        id="password" 
+                        name="password" 
+                        placeholder="Mínimo 6 caracteres"
+                        required
+                        minlength="6"
+                    >
+                </div>
+
+                <!-- Información Laboral -->
+                <h3 style="margin: 30px 0 20px; color: #2c3e50; border-bottom: 2px solid #06B6D4; padding-bottom: 10px;">
+                    💼 Información Laboral
+                </h3>
+
+                <div class="form-group">
+                    <label for="rol">Rol en el Sistema *</label>
                     <select id="rol" name="rol" required>
-                        <option value="">Seleccione un rol</option>
-                        <option value="administrador">Administrador</option>
+                        <option value="">-- Seleccione un rol --</option>
+                        <option value="administrativo">Administrativo</option>
                         <option value="medico">Médico</option>
-                        <option value="enfermera">Enfermera</option>
-                        <option value="auxiliar_administrativo">Auxiliar Administrativo</option>
-                        <option value="auxiliar_enfermeria">Auxiliar de Enfermería</option>
+                        <option value="asistencial">Personal Asistencial (Enfermería)</option>
                     </select>
                 </div>
 
+                <!-- Campo de Especialidad (Solo para médicos) -->
                 <div class="form-group" id="especialidadGroup" style="display: none;">
-                    <label for="especialidad">
-                        <i class="fas fa-stethoscope"></i> Especialidad Médica
-                    </label>
-                    <input type="text" id="especialidad" name="especialidad" 
-                           placeholder="Ej: Medicina General, Pediatría, etc.">
+                    <label for="especialidad">Especialidad Médica *</label>
+                    <select id="especialidad" name="especialidad">
+                        <option value="">-- Seleccione especialidad --</option>
+                        <option value="Medicina General">Medicina General</option>
+                        <option value="Pediatría">Pediatría</option>
+                        <option value="Ginecología y Obstetricia">Ginecología y Obstetricia</option>
+                        <option value="Cardiología">Cardiología</option>
+                        <option value="Medicina Interna">Medicina Interna</option>
+                        <option value="Ortopedia y Traumatología">Ortopedia y Traumatología</option>
+                        <option value="Dermatología">Dermatología</option>
+                        <option value="Neurología">Neurología</option>
+                        <option value="Psiquiatría">Psiquiatría</option>
+                        <option value="Oftalmología">Oftalmología</option>
+                    </select>
                 </div>
 
-                <div class="form-group">
-                    <label for="password">
-                        <i class="fas fa-lock"></i> Contraseña *
-                    </label>
-                    <input type="password" id="password" name="password" 
-                           required minlength="6">
-                    <small>Mínimo 6 caracteres</small>
-                </div>
-
-                <div class="form-group">
-                    <label for="confirmarPassword">
-                        <i class="fas fa-lock"></i> Confirmar Contraseña *
-                    </label>
-                    <input type="password" id="confirmarPassword" 
-                           required minlength="6">
+                <!-- Campo de Cargo (Solo para personal asistencial) -->
+                <div class="form-group" id="cargoGroup" style="display: none;">
+                    <label for="cargo">Cargo *</label>
+                    <select id="cargo" name="cargo">
+                        <option value="">-- Seleccione cargo --</option>
+                        <option value="Enfermera Jefe">Enfermera Jefe</option>
+                        <option value="Enfermera">Enfermera</option>
+                        <option value="Auxiliar de Enfermería">Auxiliar de Enfermería</option>
+                    </select>
                 </div>
 
                 <div class="form-actions">
-                    <button type="submit" class="btn btn-primary">
-                        <i class="fas fa-save"></i> Registrar Usuario
-                    </button>
-                    <a href="/usuarios/lista" class="btn btn-secondary">
-                        <i class="fas fa-times"></i> Cancelar
-                    </a>
+                    <button type="submit" class="btn btn-primary">💾 Guardar Usuario</button>
+                    <a href="/auth/usuarios/lista" class="btn btn-secondary">❌ Cancelar</a>
                 </div>
             </form>
         </div>
     </div>
 
     <script>
-        // Mostrar campo de especialidad solo si es médico
-        document.getElementById('rol').addEventListener('change', function() {
-            const especialidadGroup = document.getElementById('especialidadGroup');
-            const especialidadInput = document.getElementById('especialidad');
-            
-            if (this.value === 'medico') {
+        // Mostrar/ocultar campos según el rol seleccionado
+        const rolSelect = document.getElementById('rol');
+        const especialidadGroup = document.getElementById('especialidadGroup');
+        const especialidadSelect = document.getElementById('especialidad');
+        const cargoGroup = document.getElementById('cargoGroup');
+        const cargoSelect = document.getElementById('cargo');
+
+        rolSelect.addEventListener('change', function() {
+            const rol = this.value;
+
+            // Resetear campos
+            especialidadGroup.style.display = 'none';
+            cargoGroup.style.display = 'none';
+            especialidadSelect.removeAttribute('required');
+            cargoSelect.removeAttribute('required');
+            especialidadSelect.value = '';
+            cargoSelect.value = '';
+
+            // Mostrar campo según rol
+            if (rol === 'medico') {
                 especialidadGroup.style.display = 'block';
-                especialidadInput.required = true;
-            } else {
-                especialidadGroup.style.display = 'none';
-                especialidadInput.required = false;
-                especialidadInput.value = '';
+                especialidadSelect.setAttribute('required', 'required');
+            } else if (rol === 'asistencial') {
+                cargoGroup.style.display = 'block';
+                cargoSelect.setAttribute('required', 'required');
             }
         });
 
-        // Validar contraseñas
-        document.getElementById('formRegistro').addEventListener('submit', function(e) {
-            const password = document.getElementById('password').value;
-            const confirmar = document.getElementById('confirmarPassword').value;
-
-            if (password !== confirmar) {
+        // Validación antes de enviar
+        document.getElementById('formUsuario').addEventListener('submit', function(e) {
+            const rol = rolSelect.value;
+            
+            if (rol === 'medico' && !especialidadSelect.value) {
                 e.preventDefault();
-                alert('Las contraseñas no coinciden');
+                alert('Por favor seleccione una especialidad médica');
+                return false;
+            }
+
+            if (rol === 'asistencial' && !cargoSelect.value) {
+                e.preventDefault();
+                alert('Por favor seleccione un cargo');
+                return false;
             }
         });
     </script>

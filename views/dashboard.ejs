@@ -49,13 +49,13 @@
             <!-- Card de Usuarios (solo para administradores) -->
             <% if (usuario.rol === 'administrador') { %>
             <div class="card">
-                <div class="card-icon" style="background: #e74c3c;">
+                <div class="card-icon icon-usuarios">
                     <i class="fas fa-user-cog"></i>
                 </div>
                 <div class="card-content">
                     <h3>Usuarios</h3>
                     <p>Gestionar usuarios del sistema</p>
-                    <a href="/auth/usuarios/lista" class="btn btn-danger">
+                    <a href="/auth/usuarios/lista" class="btn btn-usuarios">
                         Gestionar Usuarios
                     </a>
                 </div>
