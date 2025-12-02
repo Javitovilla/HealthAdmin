@@ -25,6 +25,36 @@
             </div>
         <% } %>
 
+        <!-- FILTROS AGREGADOS -->
+        <div class="search-bar">
+            <form action="/citas/lista" method="GET" style="display: flex; gap: 10px; align-items: center;">
+                <input 
+                    type="date" 
+                    name="fecha" 
+                    value="<%= filtros.fecha || '' %>"
+                    style="flex: 1; padding: 10px; border: 2px solid #e0e0e0; border-radius: 8px;"
+                >
+                
+                <select 
+                    name="estado"
+                    style="flex: 1; padding: 10px; border: 2px solid #e0e0e0; border-radius: 8px;"
+                >
+                    <option value="">Todos los estados</option>
+                    <option value="pendiente" <%= filtros.estado === 'pendiente' ? 'selected' : '' %>>Pendiente</option>
+                    <option value="atendida" <%= filtros.estado === 'atendida' ? 'selected' : '' %>>Atendida</option>
+                    <option value="cancelada" <%= filtros.estado === 'cancelada' ? 'selected' : '' %>>Cancelada</option>
+                </select>
+                
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-filter"></i> Filtrar
+                </button>
+                
+                <a href="/citas/lista" class="btn btn-secondary">
+                    <i class="fas fa-times"></i> Limpiar
+                </a>
+            </form>
+        </div>
+
         <% if (citas.length === 0) { %>
             <div class="empty-state">
                 <i class="fas fa-calendar-times"></i>
@@ -65,6 +95,33 @@
                     </tbody>
                 </table>
             </div>
+
+            <!-- PAGINACIÓN -->
+            <% if (totalPaginas > 1) { %>
+                <div class="pagination">
+                    <% if (paginaActual > 1) { %>
+                        <a href="/citas/lista?pagina=<%= paginaActual - 1 %><%= filtros.fecha ? '&fecha=' + filtros.fecha : '' %><%= filtros.estado ? '&estado=' + filtros.estado : '' %>">
+                            Anterior
+                        </a>
+                    <% } %>
+                    
+                    <% for (let i = 1; i <= totalPaginas; i++) { %>
+                        <% if (i === paginaActual) { %>
+                            <span class="active"><%= i %></span>
+                        <% } else { %>
+                            <a href="/citas/lista?pagina=<%= i %><%= filtros.fecha ? '&fecha=' + filtros.fecha : '' %><%= filtros.estado ? '&estado=' + filtros.estado : '' %>">
+                                <%= i %>
+                            </a>
+                        <% } %>
+                    <% } %>
+                    
+                    <% if (paginaActual < totalPaginas) { %>
+                        <a href="/citas/lista?pagina=<%= paginaActual + 1 %><%= filtros.fecha ? '&fecha=' + filtros.fecha : '' %><%= filtros.estado ? '&estado=' + filtros.estado : '' %>">
+                            Siguiente
+                        </a>
+                    <% } %>
+                </div>
+            <% } %>
         <% } %>
     </div>
 </body>

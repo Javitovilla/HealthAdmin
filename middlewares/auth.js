@@ -5,13 +5,13 @@ exports.requireLogin = (req, res, next) => {
         return next();
     }
     // No autenticado, redirigir a login
-    return res.redirect('/login');
+    return res.redirect('/auth/login');
 };
 
 // Middleware para verificar si el usuario es administrador
 exports.requireAdmin = (req, res, next) => {
     if (!req.session.usuario) {
-        return res.redirect('/login');
+        return res.redirect('/auth/login');
     }
 
     if (req.session.usuario.rol !== 'administrador') {
@@ -29,7 +29,7 @@ exports.requireAdmin = (req, res, next) => {
 exports.requireRoles = (...roles) => {
     return (req, res, next) => {
         if (!req.session.usuario) {
-            return res.redirect('/login');
+            return res.redirect('/auth/login');
         }
 
         if (!roles.includes(req.session.usuario.rol)) {
@@ -48,7 +48,7 @@ exports.requireRoles = (...roles) => {
 exports.isAuthenticated = exports.requireLogin;
 exports.isAdmin = (req, res, next) => {
     if (!req.session.usuario) {
-        return res.redirect('/login');
+        return res.redirect('/auth/login');
     }
 
     if (req.session.usuario.rol !== 'administrativo') {

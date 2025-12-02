@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <%- include('./partials/head') %>
+</head>
+<body>
+    <%- include('./partials/navbar') %>
+
+    <div class="container">
+        <div class="form-container" style="max-width: 600px; margin: 100px auto; text-align: center;">
+            <i class="fas fa-exclamation-triangle" style="font-size: 80px; color: #e74c3c; margin-bottom: 20px;"></i>
+            
+            <h1 style="color: #e74c3c; margin-bottom: 20px;">
+                <%= title || 'Error' %>
+            </h1>
+            
+            <p style="font-size: 18px; color: #666; margin-bottom: 30px;">
+                <%= mensaje || 'Ha ocurrido un error' %>
+            </p>
+            
+            <a href="/dashboard" class="btn btn-primary">
+                <i class="fas fa-home"></i> Volver al Inicio
+            </a>
+        </div>
+    </div>
+</body>
+</html>

@@ -10,19 +10,33 @@ exports.login = async (req, res) => {
     try {
         const { email, password } = req.body;
 
+        console.log('=== DEBUG LOGIN ===');
+        console.log('Email ingresado:', email);
+        console.log('Password ingresado:', password);
+
         // Buscar usuario por email
         const usuario = await Usuario.findOne({ email });
 
+        console.log('¿Usuario encontrado?:', usuario ? 'SÍ' : 'NO');
+
         if (!usuario) {
+            console.log('❌ Usuario NO existe en BD');
             return res.render('login', {
                 error: 'Email o contraseña incorrectos'
             });
         }
 
+        console.log('Email en BD:', usuario.email);
+        console.log('Rol:', usuario.rol);
+        console.log('Activo:', usuario.activo);
+
         // Verificar contraseña   
         const esValida = await usuario.compararPassword(password);  
+        
+        console.log('¿Password válido?:', esValida);
 
         if (!esValida) {
+            console.log('❌ Password INCORRECTO');
             return res.render('login', {
                 error: 'Email o contraseña incorrectos'
             });
@@ -30,10 +44,13 @@ exports.login = async (req, res) => {
 
         // Verificar que el usuario esté activo
         if (!usuario.activo) {    
+            console.log('❌ Usuario INACTIVO');
             return res.render('login', {
                 error: 'Tu cuenta está desactivada. Contacta al administrador.'
             });
         }
+
+        console.log('✅ LOGIN EXITOSO - Creando sesión');
 
         // Crear sesión
         req.session.usuario = {   
@@ -43,11 +60,13 @@ exports.login = async (req, res) => {
             rol: usuario.rol      
         };
 
+        console.log('Sesión creada:', req.session.usuario);
+
         // Redirigir al dashboard 
         res.redirect('/dashboard');
 
     } catch (error) {
-        console.error('Error en login:', error);
+        console.error('❌ ERROR EN LOGIN:', error);
         res.render('login', {     
             error: 'Error al iniciar sesión. Intenta de nuevo.'     
         });

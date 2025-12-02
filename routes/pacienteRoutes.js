@@ -15,7 +15,10 @@ router.get('/nuevo', pacienteController.mostrarFormulario);
 // Crear paciente
 router.post('/nuevo', pacienteController.crearPaciente);
 
-// Ver detalle
+// BÚSQUEDA - DEBE IR ANTES DE /:id
+router.get('/buscar', pacienteController.buscarPacientes);
+
+// Ver detalle - DEBE IR DESPUÉS de rutas específicas
 router.get('/:id', pacienteController.verDetalle);
 
 // Editar paciente

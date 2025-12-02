@@ -42,7 +42,7 @@ const mostrarFormularioAgendar = async (req, res) => {
         res.render('citas/formulario', {
             usuario: req.session.usuario,
             medicos,
-            especialidades: todasLasEspecialidades, // Usar TODAS las especialidades
+            especialidades: todasLasEspecialidades,
             horarios,
             pacienteSeleccionado: null,
             error: null,
@@ -85,6 +85,22 @@ const agendarCita = async (req, res) => {
     try {
         const { pacienteId, medicoAsignado, fecha, hora, motivoConsulta } = req.body;
 
+        // Definir especialidades para usar en caso de error
+        const todasLasEspecialidades = [
+            'Medicina General',
+            'Cardiología',
+            'Pediatría',
+            'Ginecología',
+            'Ortopedia',
+            'Dermatología',
+            'Neurología',
+            'Psiquiatría',
+            'Oftalmología',
+            'Otorrinolaringología',
+            'Medicina Interna',
+            'Cirugía General'
+        ];
+
         // Validar que todos los campos estén presentes
         if (!pacienteId || !medicoAsignado || !fecha || !hora || !motivoConsulta) {
             const medicos = await Usuario.find({ rol: 'asistencial' }).sort({ nombre: 1 });
@@ -93,6 +109,7 @@ const agendarCita = async (req, res) => {
             return res.render('citas/formulario', {
                 usuario: req.session.usuario,
                 medicos,
+                especialidades: todasLasEspecialidades,
                 horarios,
                 pacienteSeleccionado: null,
                 error: 'Todos los campos son obligatorios',
@@ -111,6 +128,7 @@ const agendarCita = async (req, res) => {
             return res.render('citas/formulario', {
                 usuario: req.session.usuario,
                 medicos,
+                especialidades: todasLasEspecialidades,
                 horarios,
                 pacienteSeleccionado: null,
                 error: 'El médico ya tiene una cita agendada en ese horario',
@@ -132,12 +150,29 @@ const agendarCita = async (req, res) => {
 
     } catch (error) {
         console.error('Error al agendar cita:', error);
+        
+        const todasLasEspecialidades = [
+            'Medicina General',
+            'Cardiología',
+            'Pediatría',
+            'Ginecología',
+            'Ortopedia',
+            'Dermatología',
+            'Neurología',
+            'Psiquiatría',
+            'Oftalmología',
+            'Otorrinolaringología',
+            'Medicina Interna',
+            'Cirugía General'
+        ];
+        
         const medicos = await Usuario.find({ rol: 'asistencial' }).sort({ nombre: 1 });
         const horarios = generarHorarios();
         
         res.render('citas/formulario', {
             usuario: req.session.usuario,
             medicos,
+            especialidades: todasLasEspecialidades,
             horarios,
             pacienteSeleccionado: null,
             error: 'Error al agendar la cita. Intenta de nuevo.',
@@ -276,7 +311,7 @@ const obtenerMedicosPorEspecialidad = async (req, res) => {
     try {
         const { especialidad } = req.query;
         
-        console.log('Especialidad recibida:', especialidad); // Debug
+        console.log('Especialidad recibida:', especialidad);
         
         if (!especialidad) {
             return res.json({ medicos: [] });
@@ -287,7 +322,7 @@ const obtenerMedicosPorEspecialidad = async (req, res) => {
             especialidad: especialidad
         }).sort({ nombre: 1 });
 
-        console.log('Médicos encontrados:', medicos.length); // Debug
+        console.log('Médicos encontrados:', medicos.length);
         
         res.json({ medicos });
 
@@ -300,7 +335,6 @@ const obtenerMedicosPorEspecialidad = async (req, res) => {
 // API: Obtener todas las especialidades
 const obtenerEspecialidades = async (req, res) => {
     try {
-        // Devolver TODAS las especialidades disponibles
         const todasLasEspecialidades = [
             'Medicina General',
             'Cardiología',
