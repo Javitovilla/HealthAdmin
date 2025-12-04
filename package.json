@@ -1,13 +1,15 @@
 {
   "name": "healthadmin",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "Sistema de gestión de pacientes, citas e historias clínicas",
+  "main": "server.js",
   "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": ["healthcare", "medical", "clinic"],
+  "author": "Javier Villa Ardila",
   "license": "ISC",
   "dependencies": {
     "bcrypt": "^6.0.0",
@@ -18,5 +20,9 @@
     "express-session": "^1.18.2",
     "mongoose": "^8.19.4",
     "pdfkit": "^0.17.2"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
   }
 }
